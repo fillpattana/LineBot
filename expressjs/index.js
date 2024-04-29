@@ -1,54 +1,16 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const request = require('request')
-
-const app = express();
-
+const bodyParser = require('body-parser');
+const app = require('./routes/LineMessage');
 const PORT = process.env.PORT || 3000;
-const accessTok = process.env.PORT || 'artTKZj5KSTdsQDRQn3MNCWu5npgYENltosda2+i1NPNuRJugPrrDX821jzQLxcdC9MTB1t+Ue+70542bUgX1kfvhrQXexg0U4GwLScMjzImleNQwYwI7Draciv10vsuqPbUQheOhSKTx0x5BRPpVQdB04t89/1O/w1cDnyilFU=';
 
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-
-app.get('/webhook', (request, response) => {
-    let reply_token = request.body.events[0].replyToken
-    let msg = request.body.events[0].message.text
-    reply(reply_token, msg)
-    response.status(200)
-})
-
-app.get('/webhook/log', (request, response) => {
-    response.status(200).send("hello")
-})
-
 app.listen(PORT, () => {
     console.log(`Running on Port: ${PORT}`)
 });
 
-function reply(reply_token, msg) {
-    let headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessTok}`
-    }
-    let body = JSON.stringify({
-        replyToken: reply_token,
-        messages: [{
-            type: 'text',
-            text: msg
-        }]
-    })
-    request.post({
-        url: 'https://api.line.me/v2/bot/message/reply',
-        headers: headers,
-        body: body
-    }, (err, response, body) => {
-        console.log('status = ' + response.statusCode);
-    });
-}
-
-
-
-
+app.post('/webhook', (request, response) => {
+    response.sendStatus(201)
+})
 
 
 
