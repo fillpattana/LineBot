@@ -10,11 +10,15 @@ const accessTok = process.env.PORT || 'artTKZj5KSTdsQDRQn3MNCWu5npgYENltosda2+i1
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
-app.post('/webhook', (request, response) => {
+app.get('/webhook', (request, response) => {
     let reply_token = request.body.events[0].replyToken
     let msg = request.body.events[0].message.text
     reply(reply_token, msg)
-    response.sendStatus(200)
+    response.status(200)
+})
+
+app.get('/webhook/log', (request, response) => {
+    response.status(200).send("hello")
 })
 
 app.listen(PORT, () => {
