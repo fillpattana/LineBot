@@ -1,7 +1,8 @@
 const request = require('request')
 const moment = require('moment-timezone')
 var Getter = require('./Getter')
-const accessTok = process.env.PORT || 'artTKZj5KSTdsQDRQn3MNCWu5npgYENltosda2+i1NPNuRJugPrrDX821jzQLxcdC9MTB1t+Ue+70542bUgX1kfvhrQXexg0U4GwLScMjzImleNQwYwI7Draciv10vsuqPbUQheOhSKTx0x5BRPpVQdB04t89/1O/w1cDnyilFU=';
+require('dotenv').config();
+const accessTok = process.env.ACCESSTOKEN;
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${accessTok}`

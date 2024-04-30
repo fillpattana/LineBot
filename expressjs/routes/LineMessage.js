@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express();
-// var controller = require('../controller/getMessages');
 var controller = require('../controller/messageFilter');
 const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({extended:false}));
