@@ -17,14 +17,16 @@ async function reply(reply_token, msg) {
     const msgContent = msg.message.text;
     const timeStamp = msg.timestamp;
     const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('LLLL');
-    const groupName = await Getter.getGroupName(msg.source.groupId);
-    const senderName = await Getter.getSenderName(msg.source.groupId, msg.source.userId);
+    const groupId = msg.source.groupId
+    const senderId = msg.source.userId
+    const groupName = await Getter.getGroupName(groupId);
+    const senderName = await Getter.getSenderName(groupId, senderId);
 
     let body = JSON.stringify({
         replyToken: reply_token,
         messages: [{
             type: 'text',
-            text: `Message Type: ${msgType}\nMessage Content: ${msgContent}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
+            text: `Message Type: ${msgType}\nMessage Content: ${msgContent}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nGroupId: ${groupId}\nSender Name: ${senderName}\nSenderId: ${senderId}`
         }]
     })
     request.post({

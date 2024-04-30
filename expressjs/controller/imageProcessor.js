@@ -16,9 +16,12 @@ async function reply(reply_token, msg) {
     const msgType = msg.message.type;
     const timeStamp = msg.timestamp;
     const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('LLLL');
-    const groupName = await Getter.getGroupName(msg.source.groupId);
-    const senderName = await Getter.getSenderName(msg.source.groupId, msg.source.userId);
-    const image = await Getter.getImage(msg.message.id);
+    const groupId = msg.source.groupId
+    const senderId = msg.source.userId
+    const groupName = await Getter.getGroupName(groupId);
+    const senderName = await Getter.getSenderName(groupId, senderId);
+
+    const image = await Getter.getImage(msg.message.id)
 
     console.log("image in binary:", image)
 
@@ -33,7 +36,7 @@ async function reply(reply_token, msg) {
     //         },
     //         {
     //         type: 'text',
-    //         text: `Message Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
+    //         text: `GroupId: ${groupId}\nUserId: ${senderId}\nMessage Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
     //         }
     // ]
     // })
