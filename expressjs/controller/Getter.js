@@ -23,4 +23,13 @@ async function getSenderName(groupId, userId) {
     return data.displayName;
 }
 
-module.exports = {getGroupName, getSenderName}
+async function getImage(messageId) {
+    const url = `https://api-data.line.me/v2/bot/message/${messageId}/content`;
+    const response = await fetch(url, {
+        headers: headers,
+    });
+    const binary = await response.arrayBuffer();
+    return binary;
+}
+
+module.exports = {getGroupName, getSenderName, getImage}

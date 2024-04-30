@@ -18,10 +18,10 @@ const messageFilter = (request, response) => {
 }
 
 async function msg_type(reply_token, msg){
-
     const msgType = msg.message.type
     console.log("Message Type:", msgType)
     if (msgType === 'text'){
+        console.log("text handled successfully\n")
         messageIsText.processText(reply_token, msg)
     }
     if (msgType === 'image'){
@@ -32,20 +32,6 @@ async function msg_type(reply_token, msg){
         console.log("We are working on the file handling\n")
     }
 
-    // let body = JSON.stringify({
-    //     replyToken: reply_token,
-    //     messages: [{
-    //         type: 'text',
-    //         text: `Message Type: ${msgType}`
-    //     }]
-    // })
-    // request.post({
-    //     url: 'https://api.line.me/v2/bot/message/reply',
-    //     headers: headers,
-    //     body: body
-    // }, (err, response, body) => {
-    //     console.log('status = ' + response.statusCode);
-    // });
 }
 
 module.exports = {messageFilter}

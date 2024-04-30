@@ -18,29 +18,32 @@ async function reply(reply_token, msg) {
     const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('LLLL');
     const groupName = await Getter.getGroupName(msg.source.groupId);
     const senderName = await Getter.getSenderName(msg.source.groupId, msg.source.userId);
+    const image = await Getter.getImage(msg.message.id);
+
+    console.log("image in binary:", image)
 
     // const msgContent = msg.message.text;
 
-    let body = JSON.stringify({
-        replyToken: reply_token,
-        messages: [
-            {
-            type: 'text',
-            text: 'first message <3'
-            },
-            {
-            type: 'text',
-            text: `Message Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
-            }
-    ]
-    })
-    request.post({
-        url: 'https://api.line.me/v2/bot/message/reply',
-        headers: headers,
-        body: body
-    }, (err, response, body) => {
-        console.log('status = ' + response.statusCode);
-    });
+    // let body = JSON.stringify({
+    //     replyToken: reply_token,
+    //     messages: [
+    //         {
+    //         type: 'text',
+    //         text: "Working on it!"
+    //         },
+    //         {
+    //         type: 'text',
+    //         text: `Message Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
+    //         }
+    // ]
+    // })
+    // request.post({
+    //     url: 'https://api.line.me/v2/bot/message/reply',
+    //     headers: headers,
+    //     body: body
+    // }, (err, response, body) => {
+    //     console.log('status = ' + response.statusCode);
+    // });
 }
 
 module.exports = {processImage}
