@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const app = require('./routes/LineMessage');
-const PORT = process.env.PORT || 3000;
+require('dotenv').config();
+const PORT = process.env.PORT;
 
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());

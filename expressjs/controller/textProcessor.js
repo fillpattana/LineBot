@@ -1,7 +1,8 @@
 const request = require('request')
+require('dotenv').config();
 const moment = require('moment-timezone')
 var Getter = require('./Getter')
-const accessTok = process.env.PORT || 'artTKZj5KSTdsQDRQn3MNCWu5npgYENltosda2+i1NPNuRJugPrrDX821jzQLxcdC9MTB1t+Ue+70542bUgX1kfvhrQXexg0U4GwLScMjzImleNQwYwI7Draciv10vsuqPbUQheOhSKTx0x5BRPpVQdB04t89/1O/w1cDnyilFU=';
+const accessTok = process.env.ACCESSTOKEN;
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${accessTok}`
@@ -26,7 +27,7 @@ async function reply(reply_token, msg) {
         replyToken: reply_token,
         messages: [{
             type: 'text',
-            text: `Message Type: ${msgType}\nMessage Content: ${msgContent}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nGroupId: ${groupId}\nSender Name: ${senderName}\nSenderId: ${senderId}`
+            text: `GroupId: ${groupId}\nSenderId: ${senderId}\nMessage Type: ${msgType}\nMessage Content: ${msgContent}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
         }]
     })
     request.post({
