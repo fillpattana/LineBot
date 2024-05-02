@@ -1,4 +1,4 @@
-var express = require('express');
+const express = require('express');
 var router = express();
 var controller1 = require('../controller/messageFilter');
 var controller2 = require('../controller/groupEventsProcessor');
