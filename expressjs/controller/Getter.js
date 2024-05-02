@@ -1,12 +1,15 @@
 const request = require('request')
-const accessTok = 'artTKZj5KSTdsQDRQn3MNCWu5npgYENltosda2+i1NPNuRJugPrrDX821jzQLxcdC9MTB1t+Ue+70542bUgX1kfvhrQXexg0U4GwLScMjzImleNQwYwI7Draciv10vsuqPbUQheOhSKTx0x5BRPpVQdB04t89/1O/w1cDnyilFU='
+require('dotenv').config();
+const accessTok = process.env.ACCESS_TOKEN;
+const line_message_api = process.env.LINE_MESSAGING_API;
+const line_data_message_api = process.env.LINE_DATA_MESSAGING_API
 const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${accessTok}`
 }
 
 async function getGroupName(groupId) {
-    const url = `https://api.line.me/v2/bot/group/${groupId}/summary`;
+    const url = `${line_message_api}/group/${groupId}/summary`;
     const response = await fetch(url, {
         headers: headers,
     });
@@ -15,7 +18,7 @@ async function getGroupName(groupId) {
 }
 
 async function getSenderName(groupId, userId) {
-    const url = `https://api.line.me/v2/bot/group/${groupId}/member/${userId}`;
+    const url = `${line_message_api}/group/${groupId}/member/${userId}`;
     const response = await fetch(url, {
         headers: headers,
     });
@@ -24,7 +27,7 @@ async function getSenderName(groupId, userId) {
 }
 
 async function getImage(messageId) {
-    const url = `https://api-data.line.me/v2/bot/message/${messageId}/content`;
+    const url = `${line_data_message_api}/${messageId}/content`;
     const response = await fetch(url, {
         headers: headers,
     });
