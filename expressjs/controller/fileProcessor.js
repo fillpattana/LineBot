@@ -24,11 +24,12 @@ async function reply(reply_token, msg) {
     const groupName = await Getter.getGroupName(groupId);
     const senderName = await Getter.getSenderName(groupId, senderId);
 
-    const imageBinary = await Getter.getImage(msg.message.id);
-    const msgContent = JSON.stringify(imageBinary);
-    let extension = await getFileExtension(msg.message, msgType);
-    console.log("image in binary:", imageBinary);
-    console.log("Extension:", extension);
+    const fileBinary = await Getter.getFile(msg.message.id);
+    const extension = await getFileExtension(msg.message, msgType);
+    const imageURL = saveToStorage(groupId, senderId, msg.message, extension, fileBinary)
+    const msgContent = JSON.stringify(imageURL);
+    console.log("file in binary:", fileBinary);
+    console.log("file Extension:", extension);
 
     let body = JSON.stringify({
         replyToken: reply_token,
@@ -73,10 +74,12 @@ async function getFileExtension(message, messageType) {
     return extension
   }
 
-//   async function saveToStorage(groupId, userId, message, extension, binaryData){
-//     const storageBucket = Storage.storage.bucket(Storage.bucketName);
-//     const file = storageBucket.file(`${groupId}/${message.id}/${userId}.${extension}`)
-//     await file.save(binaryData)
-//   }
+  async function saveToStorage(groupId, userId, message, extension, binaryData){
+    const storageBucket = Storage.storage.bucket(Storage.bucketName);
+    const file = storageBucket.file(`${groupId}/${message.id}/${userId}.${extension}`);
+    await file.save(binaryData);
+    file.makePublic();
+    return file.publicUrl();
+  }
 
 module.exports = {processFile}

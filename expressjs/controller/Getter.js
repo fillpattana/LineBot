@@ -30,7 +30,7 @@ async function getSenderName(groupId, userId) {
     return data.displayName;
 }
 
-async function getImage(messageId) {
+async function getFile(messageId) {
     const url = `${line_data_message_api}/message/${messageId}/content`;
     const response = await fetch(url, {
         headers: fileheaders,
@@ -39,4 +39,4 @@ async function getImage(messageId) {
     return binary;
 }
 
-module.exports = {getGroupName, getSenderName, getImage}
+module.exports = {getGroupName, getSenderName, getFile}
