@@ -1,6 +1,7 @@
 const request = require('request')
 const moment = require('moment-timezone')
 var Getter = require('./Getter')
+var Storage = require('../initializeStorage');
 require('dotenv').config();
 const accessTok = process.env.ACCESS_TOKEN;
 const line_reply = process.env.LINE_REPLY;
@@ -9,7 +10,7 @@ const headers = {
     'Authorization': `Bearer ${accessTok}`
 }
 
-const processImage = (reply_token, msg) => {
+const processFile = (reply_token, msg) => {
     reply(reply_token, msg)
 }
 
@@ -23,11 +24,11 @@ async function reply(reply_token, msg) {
     const groupName = await Getter.getGroupName(groupId);
     const senderName = await Getter.getSenderName(groupId, senderId);
 
-    const imageBinary = await Getter.getImage(msg.message.id)
-
-    console.log("image in binary:", imageBinary)
-
+    const imageBinary = await Getter.getImage(msg.message.id);
     const msgContent = JSON.stringify(imageBinary);
+    let extension = await getFileExtension(msg.message, msgType);
+    console.log("image in binary:", imageBinary);
+    console.log("Extension:", extension);
 
     let body = JSON.stringify({
         replyToken: reply_token,
@@ -51,4 +52,31 @@ async function reply(reply_token, msg) {
     });
 }
 
-module.exports = {processImage}
+async function getFileExtension(message, messageType) {
+    let extension = '';
+    switch (messageType) {
+      case "image":
+        extension = 'png';
+        break;
+      case "video":
+        extension = 'mp4';
+        break;
+      case "audio":
+        extension = 'm4a';
+        break;
+      case "file":
+        const regex = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+        const match = regex.exec(message.fileName);
+        extension = match ? match[1] : '';
+        break;
+    }
+    return extension
+  }
+
+//   async function saveToStorage(groupId, userId, message, extension, binaryData){
+//     const storageBucket = Storage.storage.bucket(Storage.bucketName);
+//     const file = storageBucket.file(`${groupId}/${message.id}/${userId}.${extension}`)
+//     await file.save(binaryData)
+//   }
+
+module.exports = {processFile}

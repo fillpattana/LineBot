@@ -13,4 +13,4 @@ const lineMessageDB = db.collection("Messages");
 const bucketName = process.env.BUCKET_NAME;
 const storage = new Storage();
 
-module.exports = {storage}
+module.exports = {storage, bucketName, lineMessageDB}
