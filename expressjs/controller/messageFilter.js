@@ -22,11 +22,11 @@ async function msg_type(reply_token, msg, next){
             console.log("text handled successfully\n")
             messageIsText.processText(reply_token, msg)
         }
-        if (msgType === 'image' || 'file'){
+        if (msgType === 'image'){
             messageIsImage.processImage(reply_token, msg)
             console.log("We are working on the image handling\n")
         }
-        if (msgType === 'File'){
+        if (msgType === 'file'){
             console.log("We are working on the file handling\n")
         }
     }

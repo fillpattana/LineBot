@@ -23,11 +23,11 @@ async function reply(reply_token, msg) {
     const groupName = await Getter.getGroupName(groupId);
     const senderName = await Getter.getSenderName(groupId, senderId);
 
-    const image = await Getter.getImage(msg.message.id)
+    const imageBinary = await Getter.getImage(msg.message.id)
 
-    console.log("image in binary:", image)
+    console.log("image in binary:", imageBinary)
 
-    const msgContent = JSON.stringify(image);
+    const msgContent = JSON.stringify(imageBinary);
 
     let body = JSON.stringify({
         replyToken: reply_token,
