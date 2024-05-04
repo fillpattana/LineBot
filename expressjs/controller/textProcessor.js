@@ -18,7 +18,7 @@ async function reply(reply_token, msg) {
     const msgType = msg.message.type;
     const msgContent = msg.message.text;
     const timeStamp = msg.timestamp;
-    const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('LLLL');
+    const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('DD/MMMM/YYYY-h:mm:ss');
     const groupId = msg.source.groupId
     const senderId = msg.source.userId
     const groupName = await Getter.getGroupName(groupId);

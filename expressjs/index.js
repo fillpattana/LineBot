@@ -6,7 +6,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 app.post('/webhook', (request, response) => {
-    response.send("*executed*")
+    response.sendStatus(200)
 })
 
 exports.LineBotYdm = functions.https.onRequest(app)

@@ -21,27 +21,26 @@ const messageFilter = (request, response, next) => {
 async function msg_type(reply_token, msg, next){
     if (msg && msg.message && msg.message.type) {
     const msgType = msg.message.type;
-    console.log("Message Type But Even Deeper:", msgType)
     switch (msgType) {
         case 'text':
-            console.log("text handled successfully\n");
+            console.log(`${msgType} Received\n`);
             messageIsText.processText(reply_token, msg);
             break;
         case 'image':
             messageIsFile.processFile(reply_token, msg);
-            console.log("We are working on the file handling\n");
+            console.log(`${msgType} Received\n`);
             break;
         case 'file':
             messageIsFile.processFile(reply_token, msg);
-            console.log("We are working on the file handling\n");
+            console.log(`${msgType} Received\n`);
             break;
         case 'video':
             messageIsFile.processFile(reply_token, msg);
-            console.log("We are working on the file handling\n");
+            console.log(`${msgType} Received\n`);
             break;
         case 'audio':
             messageIsFile.processFile(reply_token, msg);
-            console.log("We are working on the file handling\n");
+            console.log(`${msgType} Received\n`);
             break;
     }
     }

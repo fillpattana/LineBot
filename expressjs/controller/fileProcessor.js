@@ -18,7 +18,7 @@ async function reply(reply_token, msg) {
 
     const msgType = msg.message.type;
     const timeStamp = msg.timestamp;
-    const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('LLLL');
+    const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('DD/MMMM/YYYY-h:mm:ss');
     const groupId = msg.source.groupId
     const senderId = msg.source.userId
     const groupName = await Getter.getGroupName(groupId);
@@ -26,10 +26,11 @@ async function reply(reply_token, msg) {
 
     const fileBinary = await Getter.getFile(msg.message.id);
     const extension = await getFileExtension(msg.message, msgType);
-    const imageURL = await saveToStorage(groupId, senderId, msg.message, extension, fileBinary)
+    const imageURL = await saveToStorage(groupId, senderId, msg.message, extension, fileBinary.data)
+    insertFileByGroupId(groupId, senderId, msg.message.id, imageURL, bkkTimeStamp)
     const msgContent = JSON.stringify(imageURL);
 
-    console.log("file in binary:", fileBinary);
+    console.log("file in binary:", fileBinary.data);
     console.log("file Extension:", extension);
 
     let body = JSON.stringify({
@@ -81,6 +82,16 @@ async function getFileExtension(message, messageType) {
     await file.save(binaryData);
     file.makePublic();
     return file.publicUrl();
+  }
+
+  async function insertFileByGroupId(groupId, userId, messageId, publicUrl, timestamp){
+    await Storage.lineMessageDB.add({
+        groupId: groupId,
+        userId: userId,
+        messageId: messageId,
+        publicUrl: publicUrl,
+        timestamp: timestamp
+    })
   }
 
 module.exports = {processFile}
