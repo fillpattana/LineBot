@@ -1,5 +1,6 @@
 const request = require('request')
 const { getGroupName } = require('./Getter');
+const { lineVerify } = require('./Getter');
 require('dotenv').config();
 const line_reply = process.env.LINE_REPLY
 const accessTok = process.env.ACCESS_TOKEN;
@@ -9,6 +10,9 @@ const headers = {
 }
 
 const groupEvents = (request, response, next) => {
+    if (!lineVerify(request.headers["x-line-signature"], request.body)) {
+        return res.status(401).send("Unauthorized");
+    }
     let reply_token = request.body.events[0].replyToken
     let events = request.body.events[0]
     eventType(reply_token, events, next)

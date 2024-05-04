@@ -26,8 +26,9 @@ async function reply(reply_token, msg) {
 
     const fileBinary = await Getter.getFile(msg.message.id);
     const extension = await getFileExtension(msg.message, msgType);
-    const imageURL = saveToStorage(groupId, senderId, msg.message, extension, fileBinary)
+    const imageURL = await saveToStorage(groupId, senderId, msg.message, extension, fileBinary)
     const msgContent = JSON.stringify(imageURL);
+
     console.log("file in binary:", fileBinary);
     console.log("file Extension:", extension);
 
@@ -74,7 +75,7 @@ async function getFileExtension(message, messageType) {
     return extension
   }
 
-  async function saveToStorage(groupId, userId, message, extension, binaryData){
+  async function saveToStorage(groupId, userId, message, extension, binaryData) {
     const storageBucket = Storage.storage.bucket(Storage.bucketName);
     const file = storageBucket.file(`${groupId}/${message.id}/${userId}.${extension}`);
     await file.save(binaryData);

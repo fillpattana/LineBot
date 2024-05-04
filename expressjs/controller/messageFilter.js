@@ -1,6 +1,7 @@
 const request = require('request')
 const messageIsText = require('./textProcessor')
 const messageIsFile = require('./fileProcessor')
+const Getter = require('./Getter')
 require('dotenv').config();
 const accessTok = process.env.ACCESS_TOKEN;
 const headers = {
@@ -9,6 +10,9 @@ const headers = {
 }
 
 const messageFilter = (request, response, next) => {
+    if (!Getter.lineVerify(request.headers["x-line-signature"], request.body)) {
+        return res.status(401).send("Unauthorized");
+    }
     let reply_token = request.body.events[0].replyToken
     let msg = request.body.events[0]
     msg_type(reply_token, msg, next)
