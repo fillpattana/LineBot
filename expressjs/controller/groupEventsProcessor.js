@@ -45,14 +45,17 @@ async function eventType(reply_token, events, next){
     }
 
     if (events.type === 'leave'){
-        let collection = imagesDb.where("groupId", "==", events.source.groupId)
+        let collection = Storage.lineMessageDB.where("groupId", "==", events.source.groupId)
         await collection.get().then(function (querySnapshot) {
             querySnapshot.forEach(function (doc) {
                 doc.ref.delete();
             });
         });
+        
+        // const storageBucket = Storage.storage.bucket(Storage.bucketName);
+        // const groupDirectory = storageBucket.directory(events.source.groupId);
+        // await groupDirectory.delete({ force: true });
     }
-
     next();
 }
 
