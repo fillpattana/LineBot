@@ -1,6 +1,7 @@
 const request = require('request')
 const moment = require('moment-timezone')
 var Getter = require('./Getter')
+var Storage = require('../initializeStorage');
 require('dotenv').config();
 const accessTok = process.env.ACCESS_TOKEN;
 const line_reply = process.env.LINE_REPLY;
@@ -24,6 +25,8 @@ async function reply(reply_token, msg) {
     const groupName = await Getter.getGroupName(groupId);
     const senderName = await Getter.getSenderName(groupId, senderId);
 
+    insertTextByGroupId(groupId, senderId, msgType, msg.message.id, msgContent, bkkTimeStamp)
+
     let body = JSON.stringify({
         replyToken: reply_token,
         messages: [{
@@ -38,6 +41,17 @@ async function reply(reply_token, msg) {
     }, (err, response, body) => {
         console.log('status of message sending= ' + response.statusCode);
     });
+}
+
+async function insertTextByGroupId(groupId, userId, messageType, messageId, msgContent, timestamp){
+    await Storage.lineMessageDB.add({
+        groupId: groupId,
+        userId: userId,
+        messageType: messageType,
+        messageId: messageId,
+        msgContent: msgContent,
+        timestamp: timestamp
+    })
 }
 
 module.exports = {processText}

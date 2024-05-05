@@ -27,7 +27,7 @@ async function reply(reply_token, msg) {
     const fileBinary = await Getter.getFile(msg.message.id);
     const extension = await getFileExtension(msg.message, msgType);
     const imageURL = await saveToStorage(groupId, senderId, msg.message, extension, fileBinary.data)
-    insertFileByGroupId(groupId, senderId, msg.message.id, imageURL, bkkTimeStamp)
+    insertFileByGroupId(groupId, senderId, msgType, msg.message.id, imageURL, bkkTimeStamp)
     const msgContent = JSON.stringify(imageURL);
 
     console.log("file in binary:", fileBinary.data);
@@ -84,9 +84,10 @@ async function getFileExtension(message, messageType) {
     return file.publicUrl();
   }
 
-  async function insertFileByGroupId(groupId, userId, messageId, publicUrl, timestamp){
+  async function insertFileByGroupId(groupId, userId, messageType, messageId, publicUrl, timestamp){
     await Storage.lineMessageDB.add({
         groupId: groupId,
+        messageType: messageType,
         userId: userId,
         messageId: messageId,
         publicUrl: publicUrl,

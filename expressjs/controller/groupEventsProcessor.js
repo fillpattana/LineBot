@@ -1,6 +1,7 @@
 const request = require('request')
 const { getGroupName } = require('./Getter');
 const { lineVerify } = require('./Getter');
+var Storage = require('../initializeStorage');
 require('dotenv').config();
 const line_reply = process.env.LINE_REPLY
 const accessTok = process.env.ACCESS_TOKEN;
@@ -44,7 +45,12 @@ async function eventType(reply_token, events, next){
     }
 
     if (events.type === 'leave'){
-        return "BOT leaving group and deleting storage function is under construction!"
+        let collection = imagesDb.where("groupId", "==", events.source.groupId)
+        await collection.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                doc.ref.delete();
+            });
+        });
     }
 
     next();
