@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Messages</title>
+</head>
+<body>
+    <h1>Messages by Group</h1>
+    <div id="messages-container">
+        <!-- Messages will be displayed here -->
+    </div>
+
+    <script>
+        // Fetch messages by groupId from the server
+        fetch('/messages?groupId=<%= groupId %>')
+            .then(response => response.json())
+            .then(messages => {
+                const messagesContainer = document.getElementById('messages-container');
+
+                // Loop through each message and display them
+                messages.forEach(message => {
+                    const messageElement = document.createElement('div');
+                    messageElement.innerHTML = `
+                        <p><strong>Message ID:</strong> ${message.messageId}</p>
+                        <p><strong>User ID:</strong> ${message.userId}</p>
+                        <p><strong>Message Type:</strong> ${message.messageType}</p>
+                        <!-- Add more fields as needed -->
+                    `;
+                    messagesContainer.appendChild(messageElement);
+                });
+            })
+            .catch(error => console.error('Error fetching messages:', error));
+    </script>
+</body>
+</html>

@@ -10,5 +10,8 @@ router.post('/webhook', controller2.groupEvents, controller1.messageFilter);
 router.get('/', (request, response) => {
     response.send("HELLO THIS IS FIREBASE")
 })
+router.get('/messageDisplay', (request, response) => {
+    response.render("displayMessages")
+})
 
 module.exports = router;

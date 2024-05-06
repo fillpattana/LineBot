@@ -2,6 +2,7 @@ const request = require('request')
 const { getGroupName } = require('./Getter');
 const { lineVerify } = require('./Getter');
 var Storage = require('../initializeStorage');
+var firebase = require('./fireStoreQuery')
 require('dotenv').config();
 const line_reply = process.env.LINE_REPLY
 const accessTok = process.env.ACCESS_TOKEN;
@@ -45,30 +46,10 @@ async function eventType(reply_token, events, next){
     }
 
     if (events.type === 'leave'){
-        let collection = Storage.lineMessageDB.where("groupId", "==", events.source.groupId)
-        await collection.get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                doc.ref.delete();
-            });
-        });
 
-        const storageBucket = Storage.storage.bucket(Storage.bucketName);
-        const groupDirectory = storageBucket.getFiles({ prefix: `${events.source.groupId}/` });
+        await firebase.deleteGroupByIdFirestore(events)
+        await firebase.deleteGroupByIdStorage(events)
 
-        groupDirectory
-        .then(([files]) => {
-            // Delete each file in the directory
-            const deletePromises = files.map(file => file.delete());
-
-            // Wait for all delete operations to complete
-            return Promise.all(deletePromises);
-        })
-        .then(() => {
-            console.log('Files deleted successfully');
-        })
-        .catch(err => {
-            console.error('Error deleting files:', err);
-        });
     }
     next();
 }
