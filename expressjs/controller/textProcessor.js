@@ -44,7 +44,7 @@ async function reply(reply_token, msg) {
 }
 
 async function insertTextByGroupId(groupId, userId, messageType, messageId, msgContent, timestamp){
-    await Storage.lineMessageDB.add({
+    await Storage.lineTextDB.add({
         groupId: groupId,
         userId: userId,
         messageType: messageType,

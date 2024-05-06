@@ -1,7 +1,6 @@
 const request = require('request')
 const { getGroupName } = require('./Getter');
 const { lineVerify } = require('./Getter');
-var Storage = require('../initializeStorage');
 var firebase = require('./fireStoreQuery')
 require('dotenv').config();
 const line_reply = process.env.LINE_REPLY

@@ -7,11 +7,14 @@ router.use(bodyParser.urlencoded({extended:false}));
 router.use(bodyParser.json());
 
 router.post('/webhook', controller2.groupEvents, controller1.messageFilter);
+
 router.get('/', (request, response) => {
     response.send("HELLO THIS IS FIREBASE")
 })
-router.get('/messageDisplay', (request, response) => {
-    response.render("displayMessages")
-})
+
+router.get('/:groupId', async (request, response) => {
+    const groupId = request.params.groupId;
+    response.send(`${groupId}`)
+});
 
 module.exports = router;

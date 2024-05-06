@@ -2,12 +2,6 @@ const request = require('request')
 const messageIsText = require('./textProcessor')
 const messageIsFile = require('./fileProcessor')
 const Getter = require('./Getter')
-require('dotenv').config();
-const accessTok = process.env.ACCESS_TOKEN;
-const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${accessTok}`
-}
 
 const messageFilter = (request, response, next) => {
     if (!Getter.lineVerify(request.headers["x-line-signature"], request.body)) {

@@ -85,7 +85,7 @@ async function getFileExtension(message, messageType) {
   }
 
   async function insertFileByGroupId(groupId, userId, messageType, messageId, publicUrl, timestamp){
-    await Storage.lineMessageDB.add({
+    await Storage.lineFileDB.add({
         groupId: groupId,
         messageType: messageType,
         userId: userId,

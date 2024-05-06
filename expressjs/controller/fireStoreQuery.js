@@ -1,16 +1,50 @@
 var Storage = require('../initializeStorage');
 
-async function getByGroupIdFireStore(events){
-    return Storage.lineMessageDB.where("groupId", "==", events.source.groupId)
+async function getTextByGroupIdFireStore(events){
+    return Storage.lineTextDB.where("groupId", "==", events.source.groupId)
+}
+
+async function getFileByGroupIdFireStore(events){
+    return Storage.lineFileDB.where("groupId", "==", events.source.groupId)
 }
 
 async function deleteGroupByIdFirestore(events){
-    let collection = await getByGroupIdFireStore(events)
-    await collection.get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-            doc.ref.delete();
+    // let textCollection = await getTextByGroupIdFireStore(events)
+    // await textCollection.get().then(function (querySnapshot) {
+    //     querySnapshot.forEach(function (doc) {
+    //         doc.ref.delete();
+    //     });
+    // });
+
+    // let fileCollection = await getFileByGroupIdFireStore(events)
+    // await fileCollection.get().then(function (querySnapshot) {
+    //     querySnapshot.forEach(function (doc) {
+    //         doc.ref.delete();
+    //     });
+    // });
+
+    let textCollection = await getTextByGroupIdFireStore(events);
+    if (!textCollection.empty) {
+        await textCollection.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                doc.ref.delete();
+            });
         });
-    });
+    } else {
+        console.log("Text collection is empty");
+    }
+
+    // Get file collection
+    let fileCollection = await getFileByGroupIdFireStore(events);
+    if (!fileCollection.empty) {
+        await fileCollection.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                doc.ref.delete();
+            });
+        });
+    } else {
+        console.log("File collection is empty");
+    }
 }
 
 async function deleteGroupByIdStorage(events){
@@ -32,4 +66,4 @@ async function deleteGroupByIdStorage(events){
         });
 }
 
-module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage}
+module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, getTextByGroupIdFireStore, getFileByGroupIdFireStore}
