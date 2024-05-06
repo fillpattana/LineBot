@@ -51,10 +51,24 @@ async function eventType(reply_token, events, next){
                 doc.ref.delete();
             });
         });
-        
-        // const storageBucket = Storage.storage.bucket(Storage.bucketName);
-        // const groupDirectory = storageBucket.directory(events.source.groupId);
-        // await groupDirectory.delete({ force: true });
+
+        const storageBucket = Storage.storage.bucket(Storage.bucketName);
+        const groupDirectory = storageBucket.getFiles({ prefix: `${events.source.groupId}/` });
+
+        groupDirectory
+        .then(([files]) => {
+            // Delete each file in the directory
+            const deletePromises = files.map(file => file.delete());
+
+            // Wait for all delete operations to complete
+            return Promise.all(deletePromises);
+        })
+        .then(() => {
+            console.log('Files deleted successfully');
+        })
+        .catch(err => {
+            console.error('Error deleting files:', err);
+        });
     }
     next();
 }

@@ -7,7 +7,8 @@
     "start:dev": "nodemon ./src/index.js",
     "start": "node .src/index.js",
     "deploy": "firebase deploy --only functions:LineBotYdm",
-    "deploy:auto": "firebase emulators:start"
+    "deploy:auto": "firebase emulators:start",
+    "log": "firebase functions:log --only functions:LineBotYdm"
   },
   "engines": {
     "node": "18"
@@ -24,7 +25,7 @@
     "express": "^4.19.2",
     "file-extension": "^4.0.5",
     "firebase-admin": "^12.1.0",
-    "firebase-functions": "^5.0.0",
+    "firebase-functions": "^5.0.1",
     "moment-timezone": "^0.5.45",
     "mongoose": "^8.3.2",
     "request": "^2.88.2"
