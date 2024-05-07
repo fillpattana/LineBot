@@ -9,19 +9,6 @@ async function getFileByGroupIdFireStore(events){
 }
 
 async function deleteGroupByIdFirestore(events){
-    // let textCollection = await getTextByGroupIdFireStore(events)
-    // await textCollection.get().then(function (querySnapshot) {
-    //     querySnapshot.forEach(function (doc) {
-    //         doc.ref.delete();
-    //     });
-    // });
-
-    // let fileCollection = await getFileByGroupIdFireStore(events)
-    // await fileCollection.get().then(function (querySnapshot) {
-    //     querySnapshot.forEach(function (doc) {
-    //         doc.ref.delete();
-    //     });
-    // });
 
     let textCollection = await getTextByGroupIdFireStore(events);
     if (!textCollection.empty) {
