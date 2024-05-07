@@ -48,7 +48,6 @@ async function insertTextByGroupId(groupId, userId, messageType, messageId, msgC
         groupId: groupId,
         userId: userId,
         messageType: messageType,
-        messageId: messageId,
         msgContent: msgContent,
         timestamp: timestamp
     })
