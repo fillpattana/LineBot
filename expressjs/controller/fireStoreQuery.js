@@ -29,7 +29,7 @@ async function getFileByGroupIdFireStore(groupId){
     querySnapshot.forEach(doc => {
         files.push(doc.data());
     });
-    return JSON.stringify(files);
+    return files
 }
 
 async function getTextByGroupIdFireStore(groupId){
@@ -39,10 +39,6 @@ async function getTextByGroupIdFireStore(groupId){
         texts.push(doc.data());
     });
     return texts
-}
-
-async function getUserIdByGroupId(groupId) {
-
 }
 
 async function getTextByEventsFireStore(events){
@@ -99,5 +95,5 @@ async function deleteGroupByIdStorage(events){
 }
 
 module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, 
-    getTextByEventsFireStore, getFileByEventsFireStore, getUserIdByGroupId,
+    getTextByEventsFireStore, getFileByEventsFireStore,
     getFileByGroupIdFireStore, getTextByGroupIdFireStore}

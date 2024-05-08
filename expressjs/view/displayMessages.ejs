@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messages</title>
+    <title>Funky Honey The Line Bot</title>
     <script>
         console.log("<%= logMessage1 %>");
         console.log("<%= logMessage2 %>");
@@ -14,12 +14,12 @@
             border-collapse: collapse;
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #dad611;
             padding: 8px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #f5f845;
         }
     </style>
 </head>
@@ -40,6 +40,27 @@
                 <tr>
                     <td><%= message.senderName %></td>
                     <td><%= message.msgContent %></td>
+                    <td><%= message.messageType %></td>
+                    <td><%= message.timestamp %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <h3>Files:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Sender Name</th>
+                <th>File URL</th>
+                <th>Message Type</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% file.forEach(function(message) { %>
+                <tr>
+                    <td><%= message.senderName %></td>
+                    <td><a href="<%= message.publicUrl %>"><%= message.publicUrl %></a></td>
                     <td><%= message.messageType %></td>
                     <td><%= message.timestamp %></td>
                 </tr>
