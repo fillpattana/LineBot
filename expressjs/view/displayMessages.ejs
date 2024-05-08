@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <script>
+        console.log("<%= logMessage1 %>");
+        console.log("<%= logMessage2 %>");
+    </script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Messages for Group: <%= groupName %></h1>
+    <h3>Texts:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Sender Name</th>
+                <th>Message Content</th>
+                <th>Message Type</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% text.forEach(function(message) { %>
+                <tr>
+                    <td><%= message.senderName %></td>
+                    <td><%= message.msgContent %></td>
+                    <td><%= message.messageType %></td>
+                    <td><%= message.timestamp %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,28 +1,48 @@
 var Storage = require('../initializeStorage');
+var Getter = require('./Getter');
 
-async function getTextByGroupIdFireStore(groupId){
-    return Storage.lineTextDB.where("groupId", "==", groupId)
-}
+// async function getTextByGroupIdFireStore (groupId) {
+//     const textCollection = Storage.lineTextDB.where("groupId", "==", groupId);
+//     if (!textCollection.empty) {
+//         await textCollection.get().then(function (querySnapshot) {
+//             querySnapshot.forEach(function (doc) {
+//                 console.log(doc.id, " => ", doc.data());
+//             });
+//         });
+//     } else {
+//         console.log("Text collection is empty");
+//     }
+// }
+
+// async function getTextByGroupIdFireStore(groupId) {
+//     const querySnapshot = await Storage.lineTextDB.where("groupId", "==", groupId).get();
+//     const texts = [];
+//     querySnapshot.forEach(doc => {
+//         texts.push(doc.data());
+//     });
+//     return texts;
+// }
 
 async function getFileByGroupIdFireStore(groupId){
-    return Storage.lineFileDB.where("groupId", "==", groupId)
+    const querySnapshot = await Storage.lineFileDB.where("groupId", "==", groupId).get();
+    const files = [];
+    querySnapshot.forEach(doc => {
+        files.push(doc.data());
+    });
+    return JSON.stringify(files);
 }
 
-async function getUserIdsByGroupId(groupId) {
-    let userIds = [];
-    let textCollection = await getTextByGroupIdFireStore(groupId);
-    
-    if (!textCollection.empty) {
-        await textCollection.get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                userIds.push(doc.data().userId);
-            });
-        });
-    } else {
-        console.log("Text collection is empty");
-    }
+async function getTextByGroupIdFireStore(groupId){
+    const querySnapshot = await Storage.lineTextDB.where("groupId", "==", groupId).get();
+    const texts = [];
+    querySnapshot.forEach(doc => {
+        texts.push(doc.data());
+    });
+    return texts
+}
 
-    return userIds;
+async function getUserIdByGroupId(groupId) {
+
 }
 
 async function getTextByEventsFireStore(events){
@@ -79,5 +99,5 @@ async function deleteGroupByIdStorage(events){
 }
 
 module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, 
-    getTextByEventsFireStore, getFileByEventsFireStore, getUserIdsByGroupId,
+    getTextByEventsFireStore, getFileByEventsFireStore, getUserIdByGroupId,
     getFileByGroupIdFireStore, getTextByGroupIdFireStore}
