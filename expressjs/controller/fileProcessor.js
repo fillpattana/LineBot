@@ -35,10 +35,6 @@ async function reply(reply_token, msg) {
         messages: [
             {
             type: 'text',
-            text: "Working on it!"
-            },
-            {
-            type: 'text',
             text: `GroupId: ${groupId}\nUserId: ${senderId}\nMessage Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}\n\nMessage Content: ${msgContent}`
             }
     ]
