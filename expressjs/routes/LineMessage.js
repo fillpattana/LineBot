@@ -20,19 +20,11 @@ router.get('/display/:groupId', async (request, response) => {
     let file = await fireStore.getFileByGroupIdFireStore(groupId)
     let text = await fireStore.getTextByGroupIdFireStore(groupId)
     const groupName = await Getter.getGroupName(groupId)
-    text = await addSenderNameToJsonByUserId(text)
-    file = await addSenderNameToJsonByUserId(file)
+    text = await fireStore.addSenderNameToJsonByUserId(text)
+    file = await fireStore.addSenderNameToJsonByUserId(file)
     response.render('../view/displayMessages', { groupName, file, text, logMessage1: "File JSON from get by ID: " + file,
     logMessage2: "text JSON from get by ID: " + text
      });
 });
-
-async function addSenderNameToJsonByUserId(Objects) {
-    for (const Obj of Objects) {
-        const userName = await Getter.getUserNameFromProfile(Obj.userId);
-        Obj.senderName = userName;
-    }
-    return Objects;
-}
 
 module.exports = router;

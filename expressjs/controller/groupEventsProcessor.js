@@ -24,7 +24,7 @@ async function eventType(reply_token, events, next){
     console.log("events.type", JSON.stringify(events.type));
     
     if (events.source.type !== 'group'){
-        return "This is not a group!"
+        return "I only operate in groups for the time being..."
     }
 
     if (events.type === 'join'){

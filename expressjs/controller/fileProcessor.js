@@ -30,9 +30,6 @@ async function reply(reply_token, msg) {
     insertFileByGroupId(groupId, senderId, msgType, msg.message.id, imageURL, bkkTimeStamp)
     const msgContent = JSON.stringify(imageURL);
 
-    console.log("file in binary:", fileBinary.data);
-    console.log("file Extension:", extension);
-
     let body = JSON.stringify({
         replyToken: reply_token,
         messages: [
@@ -84,12 +81,11 @@ async function getFileExtension(message, messageType) {
     return file.publicUrl();
   }
 
-  async function insertFileByGroupId(groupId, userId, messageType, messageId, publicUrl, timestamp){
+  async function insertFileByGroupId(groupId, userId, messageType, publicUrl, timestamp){
     await Storage.lineFileDB.add({
         groupId: groupId,
         messageType: messageType,
         userId: userId,
-        messageId: messageId,
         publicUrl: publicUrl,
         timestamp: timestamp
     })

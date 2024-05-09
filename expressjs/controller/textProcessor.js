@@ -43,7 +43,7 @@ async function reply(reply_token, msg) {
     });
 }
 
-async function insertTextByGroupId(groupId, userId, messageType, messageId, msgContent, timestamp){
+async function insertTextByGroupId(groupId, userId, messageType, msgContent, timestamp){
     await Storage.lineTextDB.add({
         groupId: groupId,
         userId: userId,
