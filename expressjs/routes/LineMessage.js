@@ -20,9 +20,10 @@ router.get('/display/:groupId', async (request, response) => {
     let file = await fireStore.getFileByGroupIdFireStore(groupId)
     let text = await fireStore.getTextByGroupIdFireStore(groupId)
     const groupName = await Getter.getGroupName(groupId)
+    const groupPicture =await Getter.getGroupProfilePicture(groupId)
     text = await fireStore.addSenderNameToJsonByUserId(text)
     file = await fireStore.addSenderNameToJsonByUserId(file)
-    response.render('../view/displayMessages', { groupName, file, text, logMessage1: "File JSON from get by ID: " + file,
+    response.render('../view/displayMessages', { groupName, groupPicture, file, text, logMessage1: "File JSON from get by ID: " + file,
     logMessage2: "text JSON from get by ID: " + text
      });
 });

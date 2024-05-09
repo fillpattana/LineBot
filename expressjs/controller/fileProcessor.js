@@ -27,7 +27,7 @@ async function reply(reply_token, msg) {
     const fileBinary = await Getter.getFile(msg.message.id);
     const extension = await getFileExtension(msg.message, msgType);
     const imageURL = await saveToStorage(groupId, senderId, msg.message, extension, fileBinary.data)
-    insertFileByGroupId(groupId, senderId, msgType, msg.message.id, imageURL, bkkTimeStamp)
+    insertFileByGroupId(groupId, senderId, msgType, imageURL, bkkTimeStamp)
     const msgContent = JSON.stringify(imageURL);
 
     let body = JSON.stringify({

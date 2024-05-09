@@ -21,10 +21,16 @@
         th {
             background-color: #f5f845;
         }
+        .header {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <h1>Messages for Group: <%= groupName %></h1>
+    <div class="header">
+    <img src="<%= groupPicture %>" alt="Image" width="200" height="auto">
+    <h1><%= groupName %></h1>
+    </div>
     <h3>Texts:</h3>
     <table>
         <thead>
@@ -39,7 +45,11 @@
             <% text.forEach(function(message) { %>
                 <tr>
                     <td><%= message.senderName %></td>
-                    <td><%= message.msgContent %></td>
+                    <% if (message.msgContent.startsWith('https://')) { %>
+                        <td><a href="<%= message.msgContent %>"><%= message.msgContent %></a></td>
+                    <% } else { %>
+                        <td><%= message.msgContent %></td>
+                    <% } %>
                     <td><%= message.messageType %></td>
                     <td><%= message.timestamp %></td>
                 </tr>
@@ -60,7 +70,11 @@
             <% file.forEach(function(message) { %>
                 <tr>
                     <td><%= message.senderName %></td>
-                    <td><a href="<%= message.publicUrl %>"><%= message.publicUrl %></a></td>
+                    <% if (message.messageType === 'image') { %>
+                        <td><img src="<%= message.publicUrl %>" alt="Image" width="200" height="auto"></td>
+                    <% } else { %>
+                        <td><a href="<%= message.publicUrl %>"><%= message.publicUrl %></a></td>
+                    <% } %>
                     <td><%= message.messageType %></td>
                     <td><%= message.timestamp %></td>
                 </tr>
