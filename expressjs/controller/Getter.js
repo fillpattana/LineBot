@@ -26,8 +26,30 @@ async function getGroupName(groupId) {
       return response.data.groupName
 }
 
+async function getGroupProfilePicture(groupId) {
+    const url = `${line_message_api}/group/${groupId}/summary`;
+    const response = await axios({
+        method: 'get',
+        headers: textheaders,
+        url: url,
+        responseType: 'json',
+      });
+      return response.data.pictureUrl
+}
+
 async function getSenderName(groupId, userId) {
     const url = `${line_message_api}/group/${groupId}/member/${userId}`;
+    const response = await axios({
+        method: 'get',
+        headers: textheaders,
+        url: url,
+        responseType: 'json',
+      });
+      return response.data.displayName
+}
+
+async function getUserNameFromProfile(userId) {
+    const url = `${line_message_api}/profile/${userId}`;
     const response = await axios({
         method: 'get',
         headers: textheaders,
@@ -62,4 +84,4 @@ async function lineVerify(originalSignature, body){
     return true;
 }
 
-module.exports = {getGroupName, getSenderName, getFile, lineVerify}
+module.exports = {getGroupName, getSenderName, getFile, lineVerify, getUserNameFromProfile, getGroupProfilePicture}

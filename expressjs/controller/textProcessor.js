@@ -25,7 +25,7 @@ async function reply(reply_token, msg) {
     const groupName = await Getter.getGroupName(groupId);
     const senderName = await Getter.getSenderName(groupId, senderId);
 
-    insertTextByGroupId(groupId, senderId, msgType, msg.message.id, msgContent, bkkTimeStamp)
+    insertTextByGroupId(groupId, senderId, msgType, msgContent, bkkTimeStamp)
 
     let body = JSON.stringify({
         replyToken: reply_token,
@@ -43,7 +43,7 @@ async function reply(reply_token, msg) {
     });
 }
 
-async function insertTextByGroupId(groupId, userId, messageType, messageId, msgContent, timestamp){
+async function insertTextByGroupId(groupId, userId, messageType, msgContent, timestamp){
     await Storage.lineTextDB.add({
         groupId: groupId,
         userId: userId,

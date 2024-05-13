@@ -1,28 +1,30 @@
 var Storage = require('../initializeStorage');
-
-async function getTextByGroupIdFireStore(groupId){
-    return Storage.lineTextDB.where("groupId", "==", groupId)
-}
+var Getter = require('./Getter');
 
 async function getFileByGroupIdFireStore(groupId){
-    return Storage.lineFileDB.where("groupId", "==", groupId)
+    const querySnapshot = await Storage.lineFileDB.where("groupId", "==", groupId).get();
+    const files = [];
+    querySnapshot.forEach(doc => {
+        files.push(doc.data());
+    });
+    return files
 }
 
-async function getUserIdsByGroupId(groupId) {
-    let userIds = [];
-    let textCollection = await getTextByGroupIdFireStore(groupId);
-    
-    if (!textCollection.empty) {
-        await textCollection.get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                userIds.push(doc.data().userId);
-            });
-        });
-    } else {
-        console.log("Text collection is empty");
-    }
+async function getTextByGroupIdFireStore(groupId){
+    const querySnapshot = await Storage.lineTextDB.where("groupId", "==", groupId).get();
+    const texts = [];
+    querySnapshot.forEach(doc => {
+        texts.push(doc.data());
+    });
+    return texts
+}
 
-    return userIds;
+async function addSenderNameToJsonByUserId(Objects) {
+    for (const Obj of Objects) {
+        const userName = await Getter.getUserNameFromProfile(Obj.userId);
+        Obj.senderName = userName;
+    }
+    return Objects;
 }
 
 async function getTextByEventsFireStore(events){
@@ -46,7 +48,6 @@ async function deleteGroupByIdFirestore(events){
         console.log("Text collection is empty");
     }
 
-    // Get file collection
     let fileCollection = await getFileByEventsFireStore(events);
     if (!fileCollection.empty) {
         await fileCollection.get().then(function (querySnapshot) {
@@ -66,8 +67,6 @@ async function deleteGroupByIdStorage(events){
         groupDirectory
         .then(([files]) => {
             const deletePromises = files.map(file => file.delete());
-
-            // Wait for all delete operations to complete
             return Promise.all(deletePromises);
         })
         .then(() => {
@@ -79,5 +78,5 @@ async function deleteGroupByIdStorage(events){
 }
 
 module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, 
-    getTextByEventsFireStore, getFileByEventsFireStore, getUserIdsByGroupId,
-    getFileByGroupIdFireStore, getTextByGroupIdFireStore}
+    getTextByEventsFireStore, getFileByEventsFireStore,
+    getFileByGroupIdFireStore, getTextByGroupIdFireStore, addSenderNameToJsonByUserId}

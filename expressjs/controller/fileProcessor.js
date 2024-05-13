@@ -27,19 +27,12 @@ async function reply(reply_token, msg) {
     const fileBinary = await Getter.getFile(msg.message.id);
     const extension = await getFileExtension(msg.message, msgType);
     const imageURL = await saveToStorage(groupId, senderId, msg.message, extension, fileBinary.data)
-    insertFileByGroupId(groupId, senderId, msgType, msg.message.id, imageURL, bkkTimeStamp)
+    insertFileByGroupId(groupId, senderId, msgType, imageURL, bkkTimeStamp)
     const msgContent = JSON.stringify(imageURL);
-
-    console.log("file in binary:", fileBinary.data);
-    console.log("file Extension:", extension);
 
     let body = JSON.stringify({
         replyToken: reply_token,
         messages: [
-            {
-            type: 'text',
-            text: "Working on it!"
-            },
             {
             type: 'text',
             text: `GroupId: ${groupId}\nUserId: ${senderId}\nMessage Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}\n\nMessage Content: ${msgContent}`
@@ -84,12 +77,11 @@ async function getFileExtension(message, messageType) {
     return file.publicUrl();
   }
 
-  async function insertFileByGroupId(groupId, userId, messageType, messageId, publicUrl, timestamp){
+  async function insertFileByGroupId(groupId, userId, messageType, publicUrl, timestamp){
     await Storage.lineFileDB.add({
         groupId: groupId,
         messageType: messageType,
         userId: userId,
-        messageId: messageId,
         publicUrl: publicUrl,
         timestamp: timestamp
     })
