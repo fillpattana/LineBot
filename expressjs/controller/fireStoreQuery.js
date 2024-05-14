@@ -2,21 +2,42 @@ var Storage = require('../initializeStorage');
 var Getter = require('./Getter');
 
 async function getFileByGroupIdFireStore(groupId){
-    const querySnapshot = await Storage.lineFileDB.where("groupId", "==", groupId).get();
+    const querySnapshot = await Storage.lineFileDB
+        .where("groupId", "==", groupId)
+        .get();
     const files = [];
     querySnapshot.forEach(doc => {
-        files.push(doc.data());
+        const data = doc.data();
+        const transformedTimestamp = transformTimestamp(data.timestamp);
+        files.push({ ...data, transformedTimestamp });
     });
-    return files
+    files.sort((a, b) => a.transformedTimestamp.localeCompare(b.transformedTimestamp));
+    return files;
 }
 
 async function getTextByGroupIdFireStore(groupId){
-    const querySnapshot = await Storage.lineTextDB.where("groupId", "==", groupId).get();
+    const querySnapshot = await Storage.lineTextDB
+        .where("groupId", "==", groupId)
+        .get();
     const texts = [];
     querySnapshot.forEach(doc => {
-        texts.push(doc.data());
+        const data = doc.data();
+        const transformedTimestamp = transformTimestamp(data.timestamp);
+        texts.push({ ...data, transformedTimestamp });
     });
-    return texts
+    texts.sort((a, b) => a.transformedTimestamp.localeCompare(b.transformedTimestamp));
+    return texts;
+}
+
+function transformTimestamp(timestampString) {
+    const [day, month, yearTime] = timestampString.split("/");
+    const [year, time] = yearTime.split("-");
+    const [hour, minute, second] = time.split(":");
+    const monthMap = {
+        "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04", "May": "05", "Jun": "06",
+        "Jul": "07", "Aug": "08", "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+    };
+    return `${year}-${monthMap[month]}-${day}T${hour}:${minute}:${second}`;
 }
 
 async function addSenderNameToJsonByUserId(Objects) {
