@@ -3,25 +3,6 @@ const gemini_api = process.env.GEMINI_API
 const genAI = new GoogleGenerativeAI(gemini_api);
 const firebaseStorage = require('./storageQuery')
 
-const geminiMessageSafetySettings = [
-  {
-    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-  },
-];
-
 const singleImage = async (publicURL) => {
   console.log("Entered ImageOnly Function:")
   console.log("PublicURL:", publicURL)
@@ -39,7 +20,7 @@ const singleImage = async (publicURL) => {
       }
     }
   ];
-  const result = await model.generateContent([prompt, ...imageParts], geminiMessageSafetySettings);
+  const result = await model.generateContent([prompt, ...imageParts]);
   const text = result.response.text();
   return text;
 };
@@ -61,7 +42,7 @@ const multipleImageByArray = async (arrayOfImgUrls) => {
 const textOnly = async (textMessages) => {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const prompt = "1. summarize the context of each speaker (also include speaker names), 2. provide the key points from the conversation, 3. in a very concise manner capture the idea of the whole conversation (also include links if there are any since they are most likely very important). Respond in thai please.";
-    const result = await model.generateContent([prompt, ...textMessages], geminiMessageSafetySettings);
+    const result = await model.generateContent([prompt, ...textMessages]);
     const text = result.response.text();
     return text;
 };
@@ -69,7 +50,7 @@ const textOnly = async (textMessages) => {
 const bothTextandImage = async (textResults, imageResults) => {
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
   const prompt = "Relate and summarize the context of the image descriptions with the context of the chat analysis into a single paragraph that summarizes the content of all of them accurately without leaving out any key details please"
-  const result = await model.generateContent([prompt, ...textResults, ...imageResults], geminiMessageSafetySettings);
+  const result = await model.generateContent([prompt, ...textResults, ...imageResults]);
   const text = result.response.text();
   return text;
 }

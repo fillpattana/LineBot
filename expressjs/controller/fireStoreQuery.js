@@ -13,7 +13,6 @@ async function getFileByGroupIdFireStore(groupId){
         files.push({ ...data, transformedTimestamp });
     });
     files.sort((a, b) => a.transformedTimestamp.localeCompare(b.transformedTimestamp));
-    console.log("File Object with only time sort:", files)
     return files;
 }
 
@@ -133,7 +132,6 @@ async function extractImagePublicURLsforGemini(Object) {
         publicURLs.push(obj.publicUrl);
       }
     });
-    console.log("Array of public URLs:", publicURLs)
     return publicURLs;
 }
 
