@@ -30,22 +30,22 @@ async function reply(reply_token, msg) {
     insertFileByGroupId(groupId, senderId, msgType, imageURL, bkkTimeStamp)
     const msgContent = JSON.stringify(imageURL);
 
-    let body = JSON.stringify({
-        replyToken: reply_token,
-        messages: [
-            {
-            type: 'text',
-            text: `GroupId: ${groupId}\nUserId: ${senderId}\nMessage Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}\n\nMessage Content: ${msgContent}`
-            }
-    ]
-    })
-    request.post({
-        url: `${line_reply}`,
-        headers: headers,
-        body: body
-    }, (err, response, body) => {
-        console.log('status of message sending= ' + response.statusCode);
-    });
+    // let body = JSON.stringify({
+    //     replyToken: reply_token,
+    //     messages: [
+    //         {
+    //         type: 'text',
+    //         text: `GroupId: ${groupId}\nUserId: ${senderId}\nMessage Type: ${msgType}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}\n\nMessage Content: ${msgContent}`
+    //         }
+    // ]
+    // })
+    // request.post({
+    //     url: `${line_reply}`,
+    //     headers: headers,
+    //     body: body
+    // }, (err, response, body) => {
+    //     console.log('status of message sending= ' + response.statusCode);
+    // });
 }
 
 async function getFileExtension(message, messageType) {

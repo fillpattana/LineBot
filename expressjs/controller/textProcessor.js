@@ -27,20 +27,20 @@ async function reply(reply_token, msg) {
 
     insertTextByGroupId(groupId, senderId, msgType, msgContent, bkkTimeStamp)
 
-    let body = JSON.stringify({
-        replyToken: reply_token,
-        messages: [{
-            type: 'text',
-            text: `GroupId: ${groupId}\nSenderId: ${senderId}\nMessage Type: ${msgType}\nMessage Content: ${msgContent}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
-        }]
-    })
-    request.post({
-        url: `${line_reply}`,
-        headers: headers,
-        body: body
-    }, (err, response, body) => {
-        console.log('status of message sending= ' + response.statusCode);
-    });
+    // let body = JSON.stringify({
+    //     replyToken: reply_token,
+    //     messages: [{
+    //         type: 'text',
+    //         text: `GroupId: ${groupId}\nSenderId: ${senderId}\nMessage Type: ${msgType}\nMessage Content: ${msgContent}\nTime Stamp: ${bkkTimeStamp}\nGroup Name: ${groupName}\nSender Name: ${senderName}`
+    //     }]
+    // })
+    // request.post({
+    //     url: `${line_reply}`,
+    //     headers: headers,
+    //     body: body
+    // }, (err, response, body) => {
+    //     console.log('status of message sending= ' + response.statusCode);
+    // });
 }
 
 async function insertTextByGroupId(groupId, userId, messageType, msgContent, timestamp){

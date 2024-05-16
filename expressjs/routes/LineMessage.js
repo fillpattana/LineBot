@@ -1,4 +1,5 @@
 const express = require('express');
+const gemini = require('../controller/gemini');
 var router = express();
 var messageController = require('../controller/messageFilter');
 var eventController = require('../controller/groupEventsProcessor');
@@ -21,11 +22,16 @@ router.get('/display/:groupId', async (request, response) => {
     let text = await fireStore.getTextByGroupIdFireStore(groupId)
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture =await Getter.getGroupProfilePicture(groupId)
-    text = await fireStore.addSenderNameToJsonByUserId(text)
     file = await fireStore.addSenderNameToJsonByUserId(file)
-    response.render('../view/displayMessages', { groupName, groupPicture, file, text, logMessage1: "File JSON from get by ID: " + file,
-    logMessage2: "text JSON from get by ID: " + text
-     });
+    text = await fireStore.addSenderNameToJsonByUserId(text)
+    const messageCollection = await fireStore.getTextByGroupIdForGemini(groupId)
+    const textByGem = await gemini.textOnly(messageCollection)
+    const fileCollection = await fireStore.getFileByGroupIdForGemini(groupId)
+    const imageByGem = await gemini.multipleImageByArray(fileCollection)
+    const bothByGem = await gemini.bothTextandImage(textByGem, imageByGem)
+    response.render('../view/displayMessages', { groupName, groupPicture, messageCollection, textByGem, imageByGem, bothByGem, file, text, logMessage1: "File JSON from get by ID: " + file,
+    logMessage2: "text JSON from get by ID: " + JSON.stringify(text)
+    });
 });
 
 module.exports = router;

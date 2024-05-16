@@ -45,7 +45,7 @@
             <% text.forEach(function(message) { %>
                 <tr>
                     <td><%= message.senderName %></td>
-                    <% if (message.msgContent.startsWith('https://')) { %>
+                    <% if (message.msgContent.includes('https://')) { %>
                         <td><a href="<%= message.msgContent %>"><%= message.msgContent %></a></td>
                     <% } else { %>
                         <td><%= message.msgContent %></td>
@@ -81,5 +81,21 @@
             <% }); %>
         </tbody>
     </table>
+    <h3>Message Collection:</h3>
+    <p>
+        <%= messageCollection %>
+    </p>
+    <h3>Text Summary By Gemini:</h3>
+    <p>
+        <%= textByGem %>
+    </p>
+    <h3>Image Summary By Gemini:</h3>
+    <p>
+        <%= imageByGem %>
+    </p>
+    <h3>Both text and Image Summary by Gemini:</h3>
+    <p>
+        <%= bothByGem %>
+    </p>
 </body>
 </html>

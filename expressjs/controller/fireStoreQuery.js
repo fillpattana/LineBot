@@ -2,6 +2,7 @@ var Storage = require('../initializeStorage');
 var Getter = require('./Getter');
 
 async function getFileByGroupIdFireStore(groupId){
+    console.log("Entered Normal Get File")
     const querySnapshot = await Storage.lineFileDB
         .where("groupId", "==", groupId)
         .get();
@@ -12,6 +13,7 @@ async function getFileByGroupIdFireStore(groupId){
         files.push({ ...data, transformedTimestamp });
     });
     files.sort((a, b) => a.transformedTimestamp.localeCompare(b.transformedTimestamp));
+    console.log("File Object with only time sort:", files)
     return files;
 }
 
@@ -41,8 +43,8 @@ function transformTimestamp(timestampString) {
 }
 
 async function addSenderNameToJsonByUserId(Objects) {
-    for (const Obj of Objects) {
-        const userName = await Getter.getUserNameFromProfile(Obj.userId);
+    for (let Obj of Objects) {
+        let userName = await Getter.getSenderName(Obj.groupId, Obj.userId);
         Obj.senderName = userName;
     }
     return Objects;
@@ -98,6 +100,45 @@ async function deleteGroupByIdStorage(events){
         });
 }
 
+async function getTextByGroupIdForGemini(groupId){
+    let text = await getTextByGroupIdFireStore(groupId)
+    text = await addSenderNameToJsonByUserId(text)
+    const messageCollection = await combineMessage(text)
+    return messageCollection
+}
+
+async function getFileByGroupIdForGemini(groupId){
+    let file = await getFileByGroupIdFireStore(groupId)
+    file = await addSenderNameToJsonByUserId(file)
+    let fileCollection = await extractImagePublicURLsforGemini(file)
+    return fileCollection
+}
+
+async function combineMessage(text) {
+    let messages = "";
+    text.forEach(function(message) {
+        messages += message.senderName + " กล่าวว่า: " + message.msgContent + "\n";
+    });
+    return messages;
+}
+
+async function extractImagePublicURLsforGemini(Object) {
+    console.log("Entered creating array of publicURLs")
+    let publicURLs = [];
+    // Iterate through the array of objects
+    Object.forEach(obj => {
+      // Filter for messageType image
+      if (obj.messageType === 'image') {
+        // Push the publicURL value into the publicURLs array
+        publicURLs.push(obj.publicUrl);
+      }
+    });
+    console.log("Array of public URLs:", publicURLs)
+    return publicURLs;
+}
+
 module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, 
     getTextByEventsFireStore, getFileByEventsFireStore,
-    getFileByGroupIdFireStore, getTextByGroupIdFireStore, addSenderNameToJsonByUserId}
+    getFileByGroupIdFireStore, getTextByGroupIdFireStore, addSenderNameToJsonByUserId,
+    combineMessage, getTextByGroupIdForGemini, extractImagePublicURLsforGemini, 
+    getFileByGroupIdForGemini}
