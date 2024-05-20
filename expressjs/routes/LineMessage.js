@@ -16,10 +16,11 @@ router.get('/', (request, response) => {
     response.send("HELLO THIS IS FIREBASE")
 })
 
+//display entire chat history
 router.get('/display/:groupId', async (request, response) => {
     const groupId = request.params.groupId;
-    let file = await fireStore.getFileByGroupIdFireStore(groupId)
-    let text = await fireStore.getTextByGroupIdFireStore(groupId)
+    let file = await fireStore.getFileOrderByAsc(groupId)
+    let text = await fireStore.getTextOrderByAsc(groupId)
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture =await Getter.getGroupProfilePicture(groupId)
     file = await fireStore.addSenderNameToJsonByUserId(file)
@@ -30,6 +31,20 @@ router.get('/display/:groupId', async (request, response) => {
     const imageByGem = await gemini.multipleImageByArray(fileCollection)
     const bothByGem = await gemini.bothTextandImage(textByGem, imageByGem)
     response.render('../view/displayMessages', { groupName, groupPicture, messageCollection, textByGem, imageByGem, bothByGem, file, text, logMessage1: "File JSON from get by ID: " + file,
+    logMessage2: "text JSON from get by ID: " + JSON.stringify(text)
+    });
+});
+
+//display by date specified
+router.get('/displayASC/:groupId', async (request, response) => {
+    const groupId = request.params.groupId;
+    let file = await fireStore.getFileOrderByAsc(groupId)
+    let text = await fireStore.getTextOrderByAsc(groupId)
+    const groupName = await Getter.getGroupName(groupId)
+    const groupPicture = await Getter.getGroupProfilePicture(groupId)
+    file = await fireStore.addSenderNameToJsonByUserId(file)
+    text = await fireStore.addSenderNameToJsonByUserId(text)
+    response.render('../view/displayByDate', { groupName, groupPicture, file, text, logMessage1: "File JSON from get by ID: " + file,
     logMessage2: "text JSON from get by ID: " + JSON.stringify(text)
     });
 });

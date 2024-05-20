@@ -11,7 +11,6 @@ const singleImage = async (publicURL) => {
   const prompt = "ช่วยบรรยายภาพนี้ให้หน่อย";
   const mimeType = "image/png";
 
-  // Convert image binary to a GoogleGenerativeAI.Part object.
   const imageParts = [
     {
       inlineData: {
@@ -20,6 +19,7 @@ const singleImage = async (publicURL) => {
       }
     }
   ];
+
   const result = await model.generateContent([prompt, ...imageParts]);
   const text = result.response.text();
   return text;
@@ -28,11 +28,9 @@ const singleImage = async (publicURL) => {
 const multipleImageByArray = async (arrayOfImgUrls) => {
   console.log("Entered TextandImage function")
   let imageResults = '';
-  // Call imageOnly function for each publicURL in the array
   if (arrayOfImgUrls && arrayOfImgUrls.length > 0) {
       for (const url of arrayOfImgUrls) {
           let imageResult = await singleImage(url);
-          // Concatenate the imageResult strings into one large string
           imageResults += imageResult + '\n';
         }
   }
@@ -40,11 +38,15 @@ const multipleImageByArray = async (arrayOfImgUrls) => {
 };
 
 const textOnly = async (textMessages) => {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = "1. summarize the context of each speaker (also include speaker names), 2. provide the key points from the conversation, 3. in a very concise manner capture the idea of the whole conversation (also include links if there are any since they are most likely very important). Respond in thai please.";
-    const result = await model.generateContent([prompt, ...textMessages]);
-    const text = result.response.text();
-    return text;
+  if (!textMessages || textMessages.length === 0) {
+    return "There's no text yet";
+  }
+
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const prompt = "1. summarize the context of each speaker (also include speaker names), 2. provide the key points from the conversation, 3. in a very concise manner capture the idea of the whole conversation (also include links if there are any since they are most likely very important). Respond in thai please.";
+  const result = await model.generateContent([prompt, ...textMessages]);
+  const text = result.response.text();
+  return text;
 };
 
 const bothTextandImage = async (textResults, imageResults) => {
