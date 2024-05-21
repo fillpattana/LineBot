@@ -44,19 +44,19 @@ async function deleteGroupByIdFirestore(events){
 
 async function deleteGroupByIdStorage(events){
     const storageBucket = Storage.storage.bucket(Storage.bucketName);
-        const groupDirectory = storageBucket.getFiles({ prefix: `${events.source.groupId}/` });
+    const groupDirectory = storageBucket.getFiles({ prefix: `${events.source.groupId}/` });
 
-        groupDirectory
-        .then(([files]) => {
-            const deletePromises = files.map(file => file.delete());
-            return Promise.all(deletePromises);
-        })
-        .then(() => {
-            console.log('Files deleted successfully');
-        })
-        .catch(err => {
-            console.error('Error deleting files:', err);
-        });
+    groupDirectory
+    .then(([files]) => {
+        const deletePromises = files.map(file => file.delete());
+        return Promise.all(deletePromises);
+    })
+    .then(() => {
+        console.log('Files deleted successfully');
+    })
+    .catch(err => {
+        console.error('Error deleting files:', err);
+    });
 }
 
 async function getAllTextsForGemini(groupId){
@@ -68,6 +68,20 @@ async function getAllTextsForGemini(groupId){
 
 async function getAllFilesForGemini(groupId){
     let file = await getAllFileOrderByAsc(groupId)
+    file = await addSenderNameToJsonByUserId(file)
+    let fileCollection = await extractImagePublicURLsforGemini(file)
+    return fileCollection
+}
+
+async function getTextsByDateForGemini(groupId, date){
+    let text = await getTextByDateOrderByAsc(groupId, date)
+    text = await addSenderNameToJsonByUserId(text)
+    const messageCollection = await combineMessage(text)
+    return messageCollection
+}
+
+async function getFilesByDateForGemini(groupId, date){
+    let file = await getFileByDateOrderByAsc(groupId, date)
     file = await addSenderNameToJsonByUserId(file)
     let fileCollection = await extractImagePublicURLsforGemini(file)
     return fileCollection
@@ -151,15 +165,15 @@ async function getFileByDateOrderByAsc(groupId, date){
     return files;
 }
 
-async function getTextsByDateForGemini(groupId){
-    let text = await getTextByDateOrderByAsc(groupId)
+async function getTextsByDateForGemini(groupId, date){
+    let text = await getTextByDateOrderByAsc(groupId, date)
     text = await addSenderNameToJsonByUserId(text)
     const messageCollection = await combineMessage(text)
     return messageCollection
 }
 
-async function getFilesByDateForGemini(groupId){
-    let file = await getFileByDateOrderByAsc(groupId)
+async function getFilesByDateForGemini(groupId, date){
+    let file = await getFileByDateOrderByAsc(groupId, date)
     file = await addSenderNameToJsonByUserId(file)
     let fileCollection = await extractImagePublicURLsforGemini(file)
     return fileCollection
@@ -170,4 +184,5 @@ module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage,
     combineMessage, getAllTextsForGemini, extractImagePublicURLsforGemini, 
     getAllFilesForGemini, getAllTextOrderByAsc, getAllFileOrderByAsc,
     getTextByDateOrderByAsc, getFileByDateOrderByAsc, getTextsByDateForGemini,
-    getFilesByDateForGemini}
+    getFilesByDateForGemini, getTextsByDateForGemini, getFilesByDateForGemini
+}

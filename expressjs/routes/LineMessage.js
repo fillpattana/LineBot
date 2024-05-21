@@ -26,7 +26,7 @@ router.get('/display/:groupId', async (request, response) => {
     file = await fireStore.addSenderNameToJsonByUserId(file)
     text = await fireStore.addSenderNameToJsonByUserId(text)
     const messageCollection = await fireStore.getAllTextsForGemini(groupId)
-    const textByGem = await gemini.textOnly(messageCollection)
+    const textByGem = await gemini.run(messageCollection)
     const fileCollection = await fireStore.getAllFilesForGemini(groupId)
     const imageByGem = await gemini.multipleImageByArray(fileCollection)
     const bothByGem = await gemini.bothTextandImage(textByGem, imageByGem)
@@ -45,7 +45,9 @@ router.get('/displayByDate/:groupId/:date', async (request, response) => {
     const groupPicture = await Getter.getGroupProfilePicture(groupId)
     file = await fireStore.addSenderNameToJsonByUserId(file)
     text = await fireStore.addSenderNameToJsonByUserId(text)
-    response.render('../view/displayByDate', { groupName, groupPicture, file, text, logMessage1: "File JSON from get by ID: " + file,
+    const messageCollection = await fireStore.getTextsByDateForGemini(groupId, date)
+    const textByGem = await gemini.gemTextFlash(messageCollection)
+    response.render('../view/displayByDate', { groupName, groupPicture, file, text, textByGem, logMessage1: "File JSON from get by ID: " + file,
     logMessage2: "text JSON from get by ID: " + JSON.stringify(text)
     });
 });
