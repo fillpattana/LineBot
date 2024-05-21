@@ -19,13 +19,14 @@ async function reply(reply_token, msg) {
     const msgType = msg.message.type;
     const msgContent = msg.message.text;
     const timeStamp = msg.timestamp;
-    const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('DD/MMMM/YYYY-h:mm:ss');
+    const bkkTimeStamp = moment(timeStamp).tz('Asia/Bangkok').format('DD-MMMM-YYYY-h:mm:ss');
+    const date = moment(timeStamp).tz('Asia/Bangkok').format('DD-MMMM-YYYY');
     const groupId = msg.source.groupId
     const senderId = msg.source.userId
     const groupName = await Getter.getGroupName(groupId);
     const senderName = await Getter.getSenderName(groupId, senderId);
 
-    insertTextByGroupId(groupId, senderId, msgType, msgContent, bkkTimeStamp)
+    insertTextByGroupId(groupId, senderId, msgType, msgContent, bkkTimeStamp, date)
 
     // let body = JSON.stringify({
     //     replyToken: reply_token,
@@ -43,13 +44,14 @@ async function reply(reply_token, msg) {
     // });
 }
 
-async function insertTextByGroupId(groupId, userId, messageType, msgContent, timestamp){
+async function insertTextByGroupId(groupId, userId, messageType, msgContent, timeStamp, date){
     await Storage.lineTextDB.add({
         groupId: groupId,
         userId: userId,
         messageType: messageType,
         msgContent: msgContent,
-        timestamp: timestamp
+        timeStamp: timeStamp,
+        date: date
     })
 }
 

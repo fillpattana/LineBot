@@ -19,15 +19,15 @@ router.get('/', (request, response) => {
 //display entire chat history
 router.get('/display/:groupId', async (request, response) => {
     const groupId = request.params.groupId;
-    let file = await fireStore.getFileOrderByAsc(groupId)
-    let text = await fireStore.getTextOrderByAsc(groupId)
+    let file = await fireStore.getAllFileOrderByAsc(groupId)
+    let text = await fireStore.getAllTextOrderByAsc(groupId)
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture =await Getter.getGroupProfilePicture(groupId)
     file = await fireStore.addSenderNameToJsonByUserId(file)
     text = await fireStore.addSenderNameToJsonByUserId(text)
-    const messageCollection = await fireStore.getTextByGroupIdForGemini(groupId)
+    const messageCollection = await fireStore.getAllTextsForGemini(groupId)
     const textByGem = await gemini.textOnly(messageCollection)
-    const fileCollection = await fireStore.getFileByGroupIdForGemini(groupId)
+    const fileCollection = await fireStore.getAllFilesForGemini(groupId)
     const imageByGem = await gemini.multipleImageByArray(fileCollection)
     const bothByGem = await gemini.bothTextandImage(textByGem, imageByGem)
     response.render('../view/displayMessages', { groupName, groupPicture, messageCollection, textByGem, imageByGem, bothByGem, file, text, logMessage1: "File JSON from get by ID: " + file,
@@ -36,10 +36,11 @@ router.get('/display/:groupId', async (request, response) => {
 });
 
 //display by date specified
-router.get('/displayASC/:groupId', async (request, response) => {
+router.get('/displayByDate/:groupId/:date', async (request, response) => {
     const groupId = request.params.groupId;
-    let file = await fireStore.getFileOrderByAsc(groupId)
-    let text = await fireStore.getTextOrderByAsc(groupId)
+    const date = request.params.date;
+    let file = await fireStore.getFileByDateOrderByAsc(groupId, date)
+    let text = await fireStore.getTextByDateOrderByAsc(groupId, date)
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture = await Getter.getGroupProfilePicture(groupId)
     file = await fireStore.addSenderNameToJsonByUserId(file)
