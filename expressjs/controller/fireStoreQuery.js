@@ -73,20 +73,6 @@ async function getAllFilesForGemini(groupId){
     return fileCollection
 }
 
-async function getTextsByDateForGemini(groupId, date){
-    let text = await getTextByDateOrderByAsc(groupId, date)
-    text = await addSenderNameToJsonByUserId(text)
-    const messageCollection = await combineMessage(text)
-    return messageCollection
-}
-
-async function getFilesByDateForGemini(groupId, date){
-    let file = await getFileByDateOrderByAsc(groupId, date)
-    file = await addSenderNameToJsonByUserId(file)
-    let fileCollection = await extractImagePublicURLsforGemini(file)
-    return fileCollection
-}
-
 async function combineMessage(text) {
     let messages = "";
     text.forEach(function(message) {
@@ -106,6 +92,7 @@ async function extractImagePublicURLsforGemini(Object) {
         publicURLs.push(obj.publicUrl);
       }
     });
+    console.log("array of processed image public URLS", publicURLs)
     return publicURLs;
 }
 
@@ -184,5 +171,5 @@ module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage,
     combineMessage, getAllTextsForGemini, extractImagePublicURLsforGemini, 
     getAllFilesForGemini, getAllTextOrderByAsc, getAllFileOrderByAsc,
     getTextByDateOrderByAsc, getFileByDateOrderByAsc, getTextsByDateForGemini,
-    getFilesByDateForGemini, getTextsByDateForGemini, getFilesByDateForGemini
+    getFilesByDateForGemini
 }

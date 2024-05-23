@@ -4,7 +4,6 @@ const axios = require('axios')
 
 async function extractFileBinaryFromStorage(publicURL) {
   console.log("Entered get binary from storage")
-  console.log("extract from storage's PublicUrl:", publicURL)
     try {
       const response = await axios.get(publicURL, {
         responseType: 'arraybuffer'

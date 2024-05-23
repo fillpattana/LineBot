@@ -1,11 +1,9 @@
-const { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory } = require("@google/generative-ai");
+const { GoogleGenerativeAI} = require("@google/generative-ai");
 const gemini_api = process.env.GEMINI_API
 const genAI = new GoogleGenerativeAI(gemini_api);
 const firebaseStorage = require('./storageQuery')
 
 const singleImage = async (publicURL) => {
-  console.log("Entered ImageOnly Function:")
-  console.log("PublicURL:", publicURL)
   const imageBinary = await firebaseStorage.extractFileBinaryFromStorage(publicURL)
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
   const prompt = "ช่วยบรรยายภาพนี้ให้หน่อย";
@@ -29,12 +27,15 @@ const multipleImageByArray = async (arrayOfImgUrls) => {
   console.log("Entered TextandImage function")
   let imageResults = '';
   if (arrayOfImgUrls && arrayOfImgUrls.length > 0) {
-      for (const url of arrayOfImgUrls) {
-          let imageResult = await gemImageFlash(url);
-          imageResults += imageResult + '\n';
-        }
+    for (const url of arrayOfImgUrls) {
+        let imageResult = await flashImage(url);
+        imageResults += imageResult + '\n';
+    }
+    return imageResults;  
   }
-  return imageResults;
+  else {
+    return "ไม่พบว่ามีภาพในข้อความ"
+  }
 };
 
 const textOnly = async (textMessages) => {
@@ -67,6 +68,11 @@ const gemFlashImage = genAI.getGenerativeModel({
   systemInstruction: "Identify and analyze these files; please respond in Thai.",
 });
 
+const gemFlashBoth = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash-latest",
+  systemInstruction: "From both these bodies of text, the first one is the result of a text analysis from you, the second one is the result of images analysis also by you. Both these are results of conversation summary of the same group chats. I need you to make a final summary to identify how the results of text and image analysis relate to one another along with its context. Thanks. Mind you if there's no image then dont randomly make one up please.",
+});
+
 const contextSummaryConfig = {
   temperature: 0.2,
   topP: 0.95,
@@ -83,7 +89,7 @@ const imageSummaryConfig = {
   responseMimeType: "image/png",
 };
 
-async function gemTextFlash(textMessages) {
+async function flashText(textMessages) {
   const chatSession = gemFlashText.startChat({
     contextSummaryConfig,
     history: [
@@ -119,7 +125,9 @@ async function gemTextFlash(textMessages) {
   return result.response.text();
 }
 
-async function gemImageFlash(publicUrL) {
+async function flashImage(publicUrL) {
+  console.log("Entered Flash Model Image Sending to Gemini")
+  console.log("Public URL received", publicUrL)
   const imageBinary = await firebaseStorage.extractFileBinaryFromStorage(publicUrL)
   const mimeType = "image/png";
 
@@ -141,4 +149,28 @@ async function gemImageFlash(publicUrL) {
   return result.response.text();
 }
 
-module.exports = { singleImage, multipleImageByArray, textOnly, bothTextandImage, gemTextFlash, gemImageFlash };
+async function flashBoth(textResults, imageResults) {
+  const chatSession = gemFlashBoth.startChat({
+    contextSummaryConfig,
+    history: [
+      {
+        role: "user",
+        parts: [
+          {text: "## บทสนทนาสรุป **บริบทของผู้พูด:** Phil กำลังเล่าประสบการณ์การไปงาน Partnership Committee สำหรับฝึกงานของเขาที่ Google **สรุปบทสนทนา:** Phil เล่าถึงประสบการณ์การไปงาน Partnership Committee ที่ Google ซึ่งเป็นงานที่เขาตื่นเต้นและสนุกมาก เพราะไม่เคยได้ไปงานแบบนี้มาก่อน เขาเล่าถึงความประทับใจในอาหารช่วงพักเบรค โดยเฉพาะ puff pastry ทูน่าที่เขาชอบมาก นอกจากนี้เขายังประทับใจกับโรงอาหารของ Google ที่ทำอาหารอร่อยมาก Phil บอกว่าเขาอยากไปงานแบบนี้อีก เพราะได้ทั้งความรู้ ประสบการณ์ และอาหารอร่อย **ข้อสรุปสำคัญ:** * Phil มีประสบการณ์ที่ดีในการไปงาน Partnership Committee ที่ Google * เขาประทับใจกับอาหารช่วงพักเบรค โดยเฉพาะ puff pastry ทูน่า * เขาประทับใจกับโรงอาหารของ Google ที่ทำอาหารอร่อยมาก * เขาอยากไปงานแบบนี้อีก เพราะได้ทั้งความรู้ ประสบการณ์ และอาหารอร่อย"},
+          {text: "ภาพนี้เป็นภาพของผนังไม้ที่ทาสีขาว มีการวาดรูปต้นไม้ด้วยสีดำและมีโลโก้ของ Google สีสันสดใสติดอยู่บนผนัง ทางด้านบนมีป้ายเขียนว่า \"Google (Thailand) Company Limited\" ภาพนี้บ่งบอกถึงสถานที่ทำงานของ Google ในประเทศไทย ซึ่งเป็นบริษัทเทคโนโลยีระดับโลก และสะท้อนถึงความทันสมัยและความคิดสร้างสรรค์ของบริษัท ภาพแสดงบุคคลคนหนึ่งกำลังหยิบอาหารจากบุฟเฟ่ต์ที่มีอาหารวางเรียงรายบนโต๊ะ ภายในห้องอาหาร บุคคลที่อยู่ในภาพสวมเสื้อสีขาว และกำลังหยิบอาหารในจานใส่ลงไปในจานของตัวเอง ในภาพยังเห็นบุคคลอีกคนหนึ่งยืนอยู่ด้านหลังเคาน์เตอร์บุฟเฟ่ต์ ซึ่งเป็นคนเตรียมอาหารและจัดเรียงอาหารให้เรียบร้อย มีอาหารหลากหลายชนิด เช่น ผัก ผลไม้ เนื้อสัตว์ และขนมปัง การจัดวางอาหารในบุฟเฟ่ต์แสดงให้เห็นถึงความสะอาด เรียบร้อย และน่ารับประทาน ซึ่งเป็นสิ่งสำคัญในการดึงดูดลูกค้าให้มาใช้บริการ ภาพนี้แสดงให้เห็นถึงบุคลากรหลายคนกำลังยืนอยู่หน้าป้ายโลโก้ Google โดยโลโก้ถูกสร้างขึ้นจากตัวอักษรขนาดใหญ่ สีแดง ขาว และดำ ในขณะเดียวกัน ในด้านหน้าของรูปภาพ มีการวางขนมปังและขนมชนิดอื่น ๆ บนจาน บ่งบอกถึงการจัดงานเลี้ยงหรือการจัดงานสังสรรค์ ซึ่งเป็นบรรยากาศที่อบอุ่น และเป็นกันเอง"},
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {text: "จากการวิเคราะห์ทั้งข้อความและภาพ บ่งบอกถึงประสบการณ์ของ Phil ในงาน Partnership Committee ที่ Google (Thailand) Company Limited ซึ่งเป็นงานที่จัดขึ้นในบรรยากาศที่เป็นกันเองและอบอุ่น \n\n**ข้อความ** เน้นไปที่ประสบการณ์ส่วนตัวของ Phil โดยเฉพาะความประทับใจในอาหาร โดยเฉพาะ puff pastry ทูน่า และโรงอาหารของ Google ที่ทำอาหารอร่อยมาก \n\n**ภาพ** เสริมภาพลักษณ์ของสถานที่จัดงาน โดยแสดงให้เห็นถึงบรรยากาศการจัดงานเลี้ยงหรือสังสรรค์ ซึ่งเป็นบรรยากาศที่อบอุ่นและเป็นกันเอง นอกจากนี้ยังแสดงให้เห็นถึงความสะอาดและน่ารับประทานของอาหารในบุฟเฟ่ต์ ซึ่งสอดคล้องกับความประทับใจของ Phil ในข้อความ\n\n**สรุป** ทั้งข้อความและภาพแสดงให้เห็นถึงประสบการณ์ที่ดีของ Phil ในงาน Partnership Committee ที่ Google (Thailand) Company Limited ซึ่งเป็นงานที่เต็มไปด้วยความสนุกสนาน อาหารอร่อย และบรรยากาศที่เป็นกันเอง \n"},
+        ],
+      },
+    ],
+  });
+
+  const result = await chatSession.sendMessage(textResults, imageResults);
+  return result.response.text();
+}
+
+module.exports = { singleImage, multipleImageByArray, textOnly, bothTextandImage, flashText, flashImage, flashBoth };
