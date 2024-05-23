@@ -7,7 +7,7 @@ const singleImage = async (publicURL) => {
   console.log("Entered ImageOnly Function:")
   console.log("PublicURL:", publicURL)
   const imageBinary = await firebaseStorage.extractFileBinaryFromStorage(publicURL)
-  const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
   const prompt = "ช่วยบรรยายภาพนี้ให้หน่อย";
   const mimeType = "image/png";
 
@@ -30,7 +30,7 @@ const multipleImageByArray = async (arrayOfImgUrls) => {
   let imageResults = '';
   if (arrayOfImgUrls && arrayOfImgUrls.length > 0) {
       for (const url of arrayOfImgUrls) {
-          let imageResult = await singleImage(url);
+          let imageResult = await gemImageFlash(url);
           imageResults += imageResult + '\n';
         }
   }
@@ -57,9 +57,14 @@ const bothTextandImage = async (textResults, imageResults) => {
   return text;
 }
 
-const gemFlash = genAI.getGenerativeModel({
+const gemFlashText = genAI.getGenerativeModel({
   model: "gemini-1.5-flash-latest",
   systemInstruction: "I need you to respond in Thai language. From a given body of conversation text. Your task is to identify what the context of each speaker is, provide a concise summary of the whole conversation, and finally the key takeaways of the conversation. In organized bullet points please.",
+});
+
+const gemFlashImage = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash-latest",
+  systemInstruction: "Identify and analyze these files; please respond in Thai.",
 });
 
 const contextSummaryConfig = {
@@ -70,8 +75,16 @@ const contextSummaryConfig = {
   responseMimeType: "text/plain",
 };
 
+const imageSummaryConfig = {
+  temperature: 0.7,
+  topP: 0.95,
+  topK: 64,
+  maxOutputTokens: 8192,
+  responseMimeType: "image/png",
+};
+
 async function gemTextFlash(textMessages) {
-  const chatSession = gemFlash.startChat({
+  const chatSession = gemFlashText.startChat({
     contextSummaryConfig,
     history: [
       {
@@ -106,4 +119,26 @@ async function gemTextFlash(textMessages) {
   return result.response.text();
 }
 
-module.exports = { singleImage, multipleImageByArray, textOnly, bothTextandImage, gemTextFlash };
+async function gemImageFlash(publicUrL) {
+  const imageBinary = await firebaseStorage.extractFileBinaryFromStorage(publicUrL)
+  const mimeType = "image/png";
+
+  const imageParts = [
+    {
+      inlineData: {
+        data: Buffer.from(imageBinary, "binary").toString("base64"),
+        mimeType
+      }
+    }
+  ];
+
+  const chatSession = gemFlashImage.startChat({
+    imageSummaryConfig
+  });
+
+  const result = await chatSession.sendMessage(imageParts);
+  console.log(result.response.text());
+  return result.response.text();
+}
+
+module.exports = { singleImage, multipleImageByArray, textOnly, bothTextandImage, gemTextFlash, gemImageFlash };
