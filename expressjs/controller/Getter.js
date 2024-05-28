@@ -48,17 +48,6 @@ async function getSenderName(groupId, userId) {
       return response.data.displayName
 }
 
-async function getUserNameFromProfile(userId) {
-    const url = `${line_message_api}/profile/${userId}`;
-    const response = await axios({
-        method: 'get',
-        headers: textheaders,
-        url: url,
-        responseType: 'json',
-      });
-      return response.data.displayName
-}
-
 async function getFile(messageId) {
     const url = `${line_data_message_api}/message/${messageId}/content`;
     const response = await axios({
@@ -84,4 +73,4 @@ async function lineVerify(originalSignature, body){
     return true;
 }
 
-module.exports = {getGroupName, getSenderName, getFile, lineVerify, getUserNameFromProfile, getGroupProfilePicture}
+module.exports = {getGroupName, getSenderName, getFile, lineVerify, getGroupProfilePicture}

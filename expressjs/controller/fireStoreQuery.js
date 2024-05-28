@@ -1,27 +1,9 @@
 var Storage = require('../initializeStorage');
 var Getter = require('./Getter');
 
-async function getFileByGroupIdFireStore(groupId){
-    const querySnapshot = await Storage.lineFileDB.where("groupId", "==", groupId).get();
-    const files = [];
-    querySnapshot.forEach(doc => {
-        files.push(doc.data());
-    });
-    return files
-}
-
-async function getTextByGroupIdFireStore(groupId){
-    const querySnapshot = await Storage.lineTextDB.where("groupId", "==", groupId).get();
-    const texts = [];
-    querySnapshot.forEach(doc => {
-        texts.push(doc.data());
-    });
-    return texts
-}
-
 async function addSenderNameToJsonByUserId(Objects) {
-    for (const Obj of Objects) {
-        const userName = await Getter.getUserNameFromProfile(Obj.userId);
+    for (let Obj of Objects) {
+        let userName = await Getter.getSenderName(Obj.groupId, Obj.userId);
         Obj.senderName = userName;
     }
     return Objects;
@@ -62,21 +44,132 @@ async function deleteGroupByIdFirestore(events){
 
 async function deleteGroupByIdStorage(events){
     const storageBucket = Storage.storage.bucket(Storage.bucketName);
-        const groupDirectory = storageBucket.getFiles({ prefix: `${events.source.groupId}/` });
+    const groupDirectory = storageBucket.getFiles({ prefix: `${events.source.groupId}/` });
 
-        groupDirectory
-        .then(([files]) => {
-            const deletePromises = files.map(file => file.delete());
-            return Promise.all(deletePromises);
-        })
-        .then(() => {
-            console.log('Files deleted successfully');
-        })
-        .catch(err => {
-            console.error('Error deleting files:', err);
-        });
+    groupDirectory
+    .then(([files]) => {
+        const deletePromises = files.map(file => file.delete());
+        return Promise.all(deletePromises);
+    })
+    .then(() => {
+        console.log('Files deleted successfully');
+    })
+    .catch(err => {
+        console.error('Error deleting files:', err);
+    });
+}
+
+async function getAllTextsForGemini(groupId){
+    let text = await getAllTextOrderByAsc(groupId)
+    text = await addSenderNameToJsonByUserId(text)
+    const messageCollection = await combineMessage(text)
+    return messageCollection
+}
+
+async function getAllFilesForGemini(groupId){
+    let file = await getAllFileOrderByAsc(groupId)
+    file = await addSenderNameToJsonByUserId(file)
+    let fileCollection = await extractImagePublicURLsforGemini(file)
+    return fileCollection
+}
+
+async function combineMessage(text) {
+    let messages = "";
+    text.forEach(function(message) {
+        messages += message.senderName + " กล่าวว่า: " + message.msgContent + "\n";
+    });
+    return messages;
+}
+
+async function extractImagePublicURLsforGemini(Object) {
+    console.log("Entered creating array of publicURLs")
+    let publicURLs = [];
+    // Iterate through the array of file/text objects from firestore
+    Object.forEach(obj => {
+      // Filter for messageType image
+      if (obj.messageType === 'image') {
+        // Push the publicURL value into the publicURLs array
+        publicURLs.push(obj.publicUrl);
+      }
+    });
+    console.log("array of processed image public URLS", publicURLs)
+    return publicURLs;
+}
+
+async function getAllTextOrderByAsc(groupId){
+    const querySnapshot = await Storage.lineTextDB
+        .where("groupId", "==", groupId)
+        .orderBy("timeStamp", "asc")
+        .get();
+    const texts = [];
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        texts.push({...data});
+    });
+    return texts;
+}
+
+async function getAllFileOrderByAsc(groupId){
+    console.log("Entered Get File")
+    const querySnapshot = await Storage.lineFileDB
+        .where("groupId", "==", groupId)
+        .orderBy("timeStamp", "asc")
+        .get();
+    const files = [];
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        files.push({...data});
+    });
+    return files;
+}
+
+async function getTextByDateOrderByAsc(groupId, date){
+    const querySnapshot = await Storage.lineTextDB
+        .where("groupId", "==", groupId)
+        .where("date", "==", date)
+        .orderBy("timeStamp", "asc")
+        .get();
+    const texts = [];
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        texts.push({...data});
+    });
+    return texts;
+}
+
+async function getFileByDateOrderByAsc(groupId, date){
+    console.log("Entered Get File")
+    const querySnapshot = await Storage.lineFileDB
+        .where("groupId", "==", groupId)
+        .where("date", "==", date)
+        .orderBy("timeStamp", "asc")
+        .get();
+    const files = [];
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        files.push({...data});
+    });
+    return files;
+}
+
+async function getTextsByDateForGemini(groupId, date){
+    let text = await getTextByDateOrderByAsc(groupId, date)
+    text = await addSenderNameToJsonByUserId(text)
+    const messageCollection = await combineMessage(text)
+    return messageCollection
+}
+
+async function getFilesByDateForGemini(groupId, date){
+    let file = await getFileByDateOrderByAsc(groupId, date)
+    file = await addSenderNameToJsonByUserId(file)
+    let fileCollection = await extractImagePublicURLsforGemini(file)
+    return fileCollection
 }
 
 module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, 
-    getTextByEventsFireStore, getFileByEventsFireStore,
-    getFileByGroupIdFireStore, getTextByGroupIdFireStore, addSenderNameToJsonByUserId}
+    getTextByEventsFireStore, getFileByEventsFireStore, addSenderNameToJsonByUserId,
+    combineMessage, getAllTextsForGemini, extractImagePublicURLsforGemini, 
+    getAllFilesForGemini, getAllTextOrderByAsc, getAllFileOrderByAsc,
+    getTextByDateOrderByAsc, getFileByDateOrderByAsc, getTextsByDateForGemini,
+    getFilesByDateForGemini
+}
