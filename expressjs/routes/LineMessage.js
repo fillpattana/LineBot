@@ -23,8 +23,6 @@ router.get('/display/:groupId', async (request, response) => {
     let text = await fireStore.getAllTextOrderByAsc(groupId)
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture =await Getter.getGroupProfilePicture(groupId)
-    file = await fireStore.addSenderNameToJsonByUserId(file)
-    text = await fireStore.addSenderNameToJsonByUserId(text)
     const messageCollection = await fireStore.getAllTextsForGemini(groupId)
     const textByGem = await gemini.flashText(messageCollection)
     const fileCollection = await fireStore.getAllFilesForGemini(groupId)
@@ -43,8 +41,6 @@ router.get('/displayByDate/:groupId/:date', async (request, response) => {
     let text = await fireStore.getTextByDateOrderByAsc(groupId, date)
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture = await Getter.getGroupProfilePicture(groupId)
-    file = await fireStore.addSenderNameToJsonByUserId(file)
-    text = await fireStore.addSenderNameToJsonByUserId(text)
     const messageCollection = await fireStore.getTextsByDateForGemini(groupId, date)
     const textByGem = await gemini.flashText(messageCollection)
     const fileCollection = await fireStore.getFilesByDateForGemini(groupId, date)
@@ -52,6 +48,20 @@ router.get('/displayByDate/:groupId/:date', async (request, response) => {
     const bothByGem = await gemini.flashBoth(textByGem, imageByGem)
     response.render('../view/displayByDate', { groupName, groupPicture, file, text, textByGem, imageByGem, bothByGem, logMessage1: "File JSON from get by ID: " + file,
     logMessage2: "text JSON from get by ID: " + JSON.stringify(text)
+    });
+});
+
+//Topic Units Display
+router.get('/displayTopic/:groupId/:date', async (request, response) => {
+    const groupId = request.params.groupId;
+    const date = request.params.date;
+    let file = await fireStore.getFileByDateOrderByAsc(groupId, date)
+    let text = await fireStore.getTextByDateOrderByAsc(groupId, date)
+    const groupName = await Getter.getGroupName(groupId)
+    const groupPicture = await Getter.getGroupProfilePicture(groupId)
+    const messageByTopic = await fireStore.textMessageByTopic(text)
+    response.render('../view/displayByTopics', { groupName, groupPicture, text, file, messageByTopic, logMessage1: "File JSON from get by ID: " + file,
+    logMessage2: "text JSON from get by ID: " + JSON.stringify(text), logMessage3: "text messages separated by topics" + JSON.stringify(messageByTopic)
     });
 });
 

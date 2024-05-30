@@ -1,3 +1,4 @@
+const { text } = require('body-parser');
 var Storage = require('../initializeStorage');
 var Getter = require('./Getter');
 
@@ -101,11 +102,12 @@ async function getAllTextOrderByAsc(groupId){
         .where("groupId", "==", groupId)
         .orderBy("timeStamp", "asc")
         .get();
-    const texts = [];
+    let texts = [];
     querySnapshot.forEach(doc => {
         const data = doc.data();
         texts.push({...data});
     });
+    texts = await addSenderNameToJsonByUserId(texts)
     return texts;
 }
 
@@ -115,11 +117,12 @@ async function getAllFileOrderByAsc(groupId){
         .where("groupId", "==", groupId)
         .orderBy("timeStamp", "asc")
         .get();
-    const files = [];
+    let files = [];
     querySnapshot.forEach(doc => {
         const data = doc.data();
         files.push({...data});
     });
+    files = await addSenderNameToJsonByUserId(files)
     return files;
 }
 
@@ -129,11 +132,12 @@ async function getTextByDateOrderByAsc(groupId, date){
         .where("date", "==", date)
         .orderBy("timeStamp", "asc")
         .get();
-    const texts = [];
+    let texts = [];
     querySnapshot.forEach(doc => {
         const data = doc.data();
         texts.push({...data});
     });
+    texts = await addSenderNameToJsonByUserId(texts);
     return texts;
 }
 
@@ -144,26 +148,60 @@ async function getFileByDateOrderByAsc(groupId, date){
         .where("date", "==", date)
         .orderBy("timeStamp", "asc")
         .get();
-    const files = [];
+    let files = [];
     querySnapshot.forEach(doc => {
         const data = doc.data();
         files.push({...data});
     });
+    files = await addSenderNameToJsonByUserId(files);
     return files;
 }
 
 async function getTextsByDateForGemini(groupId, date){
     let text = await getTextByDateOrderByAsc(groupId, date)
-    text = await addSenderNameToJsonByUserId(text)
     const messageCollection = await combineMessage(text)
     return messageCollection
 }
 
 async function getFilesByDateForGemini(groupId, date){
     let file = await getFileByDateOrderByAsc(groupId, date)
-    file = await addSenderNameToJsonByUserId(file)
     let fileCollection = await extractImagePublicURLsforGemini(file)
     return fileCollection
+}
+
+async function textMessageByTopic(messages) {
+    const THIRTY_MINUTES = 30 * 60 * 1000; // 30 minutes in milliseconds
+    let combinedMessages = [];
+    let currentCollection = [];
+    let lastTimeStamp = null;
+
+    function parseTimeStamp(timeStamp) {
+        return new Date(Date.parse(timeStamp.replace(/-/g, ' ')));
+    }
+
+    messages.forEach(function (message) {
+        const messageTime = parseTimeStamp(message.timeStamp);
+
+        if (lastTimeStamp === null || (messageTime - lastTimeStamp) < THIRTY_MINUTES) {
+            currentCollection.push(message);
+        } else {
+            combinedMessages.push(currentCollection);
+            currentCollection = [message];
+        }
+        lastTimeStamp = messageTime;
+    });
+
+    // Push the last collection if there are any messages left
+    if (currentCollection.length > 0) {
+        combinedMessages.push(currentCollection);
+    }
+
+    const result = combinedMessages.map(collection => {
+        return collection.map(message => message.senderName + " กล่าวว่า: " + message.msgContent + "\n").join('');
+    });
+
+    console.log(result);
+    return result;
 }
 
 module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, 
@@ -171,5 +209,5 @@ module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage,
     combineMessage, getAllTextsForGemini, extractImagePublicURLsforGemini, 
     getAllFilesForGemini, getAllTextOrderByAsc, getAllFileOrderByAsc,
     getTextByDateOrderByAsc, getFileByDateOrderByAsc, getTextsByDateForGemini,
-    getFilesByDateForGemini
+    getFilesByDateForGemini, textMessageByTopic
 }

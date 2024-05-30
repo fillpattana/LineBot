@@ -32,7 +32,7 @@ async function eventType(reply_token, events, next){
             replyToken: reply_token,
             messages: [{
                 type: 'text',
-                text: `สวัสดีครับสมาชิก "${await getGroupName(events.source.groupId)}\nถ้าไม่เป็นการรบกวนผมจะขออณุญาตดูแลบทสนทนาของทุกท่านไว้ให้อยู่ยงคงกระพันราวกับน้ำผึ้งเลยครับผม!"`
+                text: `สวัสดีครับทุกท่านสมาชิก "${await getGroupName(events.source.groupId)}"\nหากไม่เป็นการรบกวน\nผมจะขออณุญาตดูแลบทสนทนาของทุกท่านไว้ให้อยู่ยงคงกระพันราวกับน้ำผึ้งเลยครับผม!"`
             }]
         })
         request.post({

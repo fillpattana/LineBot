@@ -60,7 +60,7 @@ const bothTextandImage = async (textResults, imageResults) => {
 
 const gemFlashText = genAI.getGenerativeModel({
   model: "gemini-1.5-flash-latest",
-  systemInstruction: "I need you to respond in Thai language. From a given body of conversation text. Your task is to identify what the context of each speaker is, provide a concise summary of the whole conversation, and finally the key takeaways of the conversation. In organized bullet points please.",
+  systemInstruction: "I need you to respond in Thai language. From a given body of conversation text. Your task is to identify the context of the conversation. Begin with a concise title for the topic of discussion, followed by the context summary itself, then finally the key messages of the conversation labelled with the sender's name as well.",
 });
 
 const gemFlashImage = genAI.getGenerativeModel({
@@ -89,7 +89,7 @@ const imageSummaryConfig = {
   responseMimeType: "image/png",
 };
 
-async function flashText(textMessages) {
+async function flashText(textMessage) {
   const chatSession = gemFlashText.startChat({
     contextSummaryConfig,
     history: [
@@ -102,25 +102,25 @@ async function flashText(textMessages) {
       {
         role: "model",
         parts: [
-          {text: "## บทสนทนาสรุป\n\n**บริบทของผู้พูด:**  Phil กำลังเล่าประสบการณ์การไปงาน Partnership Committee สำหรับฝึกงานของเขาที่ Google \n\n**สรุปบทสนทนา:** Phil เล่าถึงประสบการณ์การไปงาน Partnership Committee ที่ Google ซึ่งเป็นงานที่เขาตื่นเต้นและสนุกมาก เพราะไม่เคยได้ไปงานแบบนี้มาก่อน  เขาเล่าถึงความประทับใจในอาหารช่วงพักเบรค โดยเฉพาะ puff pastry ทูน่าที่เขาชอบมาก  นอกจากนี้เขายังประทับใจกับโรงอาหารของ Google ที่ทำอาหารอร่อยมาก  Phil บอกว่าเขาอยากไปงานแบบนี้อีก เพราะได้ทั้งความรู้ ประสบการณ์ และอาหารอร่อย\n\n**ข้อสรุปสำคัญ:**\n\n* Phil มีประสบการณ์ที่ดีในการไปงาน Partnership Committee ที่ Google\n* เขาประทับใจกับอาหารช่วงพักเบรค โดยเฉพาะ puff pastry ทูน่า\n* เขาประทับใจกับโรงอาหารของ Google ที่ทำอาหารอร่อยมาก\n* เขาอยากไปงานแบบนี้อีก เพราะได้ทั้งความรู้ ประสบการณ์ และอาหารอร่อย\n"},
+          {text: "## ประสบการณ์ไปงาน Partnership Committee ที่ Google\n\nบทสนทนานี้เป็นการเล่าประสบการณ์ของ Phil ที่ไปร่วมงาน Partnership Committee สำหรับที่ฝึกงานของเขา ซึ่งเป็นงานที่จัดโดย Google Phil รู้สึกตื่นเต้นและสนุกกับงานนี้ เพราะไม่เคยได้ไปงานแบบนี้มาก่อน และยังได้เรียนรู้ข้อมูลใหม่ๆ รวมถึงได้ทานอาหารอร่อยๆ อีกด้วย\n\n**Key Messages:**\n\n**Phil:**\n* ไปร่วมงาน Partnership Committee สำหรับที่ฝึกงาน\n* งานจัดโดย Google\n* รู้สึกตื่นเต้นและสนุกกับงาน\n* ได้เรียนรู้ข้อมูลใหม่ๆ\n* อาหารอร่อยมาก โดยเฉพาะ puff pastry ทูน่า\n* อยากไปงานแบบนี้อีก \n"},
         ],
       },
       {
         role: "user",
         parts: [
-          {text: "phil กล่าวว่า: ช่วยเลือกรูปภาพหน่อยจะเอาไปลงไอจี phil กล่าวว่า: สองรูปนี้อันไหนดูดีสุด phil กล่าวว่า: ผมว่าจะลงแค่รูปเดียว phil กล่าวว่า: แต่ก็ไม่แน่ถ้าผ่านทั้ง2รูปก็ลงไปให้หมดเลย55555 phil กล่าวว่า: นี่ละอาทิตย์ที่แล้วช่วงเสาร์อาทิตย์เราไปวิ่งมาราธอนมาด้วย phil กล่าวว่า: ที่หัวหินอ่ะ phil กล่าวว่า: สนุกมากๆคือไม่เคยมีประสบการณ์แบบนั้นมาก่อน phil กล่าวว่า: ไม่ได้ยากมากนะ phil กล่าวว่า: วิ่งไป 10 กิโล phil กล่าวว่า: นี่ก็ที่ชายหาด phil กล่าวว่า: รูปไหนดูดีสุดไว้มากบอกด้วยละกันนะ phil กล่าวว่า: อยากฟังจากหลายๆมุมมอง phil กล่าวว่า: ขอบคุณมากๆเลยยยย "},
+          {text: "phil กล่าวว่า: ช่วยเลือกรูปภาพหน่อยจะเอาไปลงไอจี phil กล่าวว่า: สองรูปนี้อันไหนดูดีสุด phil กล่าวว่า: ผมว่าจะลงแค่รูปเดียว phil กล่าวว่า: แต่ก็ไม่แน่ถ้าผ่านทั้ง2รูปก็ลงไปให้หมดเลย55555 phil กล่าวว่า: นี่ละอาทิตย์ที่แล้วช่วงเสาร์อาทิตย์เราไปวิ่งมาราธอนมาด้วย phil กล่าวว่า: ที่หัวหินอ่ะ phil กล่าวว่า: สนุกมากๆคือไม่เคยมีประสบการณ์แบบนั้นมาก่อน phil กล่าวว่า: ไม่ได้ยากมากนะ phil กล่าวว่า: วิ่งไป 10 กิโล phil กล่าวว่า: นี่ก็ที่ชายหาด phil กล่าวว่า: รูปไหนดูดีสุดไว้มากบอกด้วยละกันนะ phil กล่าวว่า: อยากฟังจากหลายๆมุมมอง phil กล่าวว่า: ขอบคุณมากๆเลยยยย"},
         ],
       },
       {
         role: "model",
         parts: [
-          {text: "## บทสนทนาสรุป\n\n**บริบทของผู้พูด:** Phil กำลังขอความช่วยเหลือในการเลือกรูปภาพเพื่อลง Instagram โดยเขาต้องการเลือกระหว่างสองรูปที่ถ่ายจากการวิ่งมาราธอนที่หัวหิน\n\n**สรุปบทสนทนา:** Phil เล่าถึงประสบการณ์การวิ่งมาราธอนที่หัวหิน ซึ่งเป็นประสบการณ์ใหม่สำหรับเขา  เขาบอกว่าสนุกมากและไม่ได้ยากมาก  เขาเลือกวิ่งระยะทาง 10 กิโลเมตร  Phil แสดงรูปภาพสองรูปที่ถ่ายจากการวิ่งมาราธอนและขอความช่วยเหลือในการเลือกรูปภาพเพื่อลง Instagram  เขาต้องการฟังความคิดเห็นจากหลายๆ มุมมอง\n\n**ข้อสรุปสำคัญ:**\n\n* Phil ไปวิ่งมาราธอนที่หัวหินเป็นครั้งแรก\n* เขาเลือกวิ่งระยะทาง 10 กิโลเมตร\n* เขาต้องการเลือกรูปภาพเพื่อลง Instagram \n* เขาต้องการฟังความคิดเห็นจากหลายๆ มุมมอง \n"},
+          {text: "## เลือกรูปลงไอจี\n\nบทสนทนานี้เป็นการขอความช่วยเหลือจากเพื่อนในการเลือกรูปภาพเพื่อลงไอจี Phil กำลังตัดสินใจระหว่างสองรูปภาพที่ถ่ายจากการวิ่งมาราธอนที่หัวหินเมื่อช่วงเสาร์อาทิตย์ที่ผ่านมา Phil อยากได้ความคิดเห็นจากเพื่อนๆ ว่ารูปไหนดูดีกว่ากัน และอยากฟังมุมมองจากหลายๆ คน \n\n**Key Messages:**\n\n**Phil:**\n* ขอความช่วยเหลือในการเลือกรูปภาพเพื่อลงไอจี\n* กำลังตัดสินใจระหว่างสองรูปภาพ\n* รูปภาพถ่ายจากการวิ่งมาราธอนที่หัวหิน\n* อยากได้ความคิดเห็นจากเพื่อนๆ ว่ารูปไหนดูดีกว่ากัน\n* อยากฟังมุมมองจากหลายๆ คน\n"},
         ],
       },
     ],
   });
 
-  const result = await chatSession.sendMessage(textMessages);
+  const result = await chatSession.sendMessage(textMessage);
   console.log(result.response.text());
   return result.response.text();
 }
