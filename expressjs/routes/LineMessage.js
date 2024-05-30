@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const gemini = require('../controller/gemini');
 var router = express();
 var messageController = require('../controller/messageFilter');
@@ -8,6 +9,9 @@ const bodyParser = require('body-parser');
 router.set('view engine', 'ejs');
 router.use(bodyParser.urlencoded({extended:false}));
 router.use(bodyParser.json());
+router.use(cors({
+    origin: 'http://localhost:3000' // Allow only this origin
+}));
 var Getter = require('../controller/Getter')
 
 router.post('/webhook', eventController.groupEvents, messageController.messageFilter);
@@ -60,7 +64,7 @@ router.get('/displayTopic/:groupId/:date', async (request, response) => {
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture = await Getter.getGroupProfilePicture(groupId)
     const messageByTopic = await fireStore.textMessageByTopic(text)
-    response.render('../view/displayByTopics', { groupName, groupPicture, text, file, messageByTopic, logMessage1: "File JSON from get by ID: " + file,
+    response.send({ groupName, groupPicture, text, file, messageByTopic, logMessage1: "File JSON from get by ID: " + file,
     logMessage2: "text JSON from get by ID: " + JSON.stringify(text), logMessage3: "text messages separated by topics" + JSON.stringify(messageByTopic)
     });
 });
