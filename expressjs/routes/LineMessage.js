@@ -64,9 +64,7 @@ router.get('/displayTopic/:groupId/:date', async (request, response) => {
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture = await Getter.getGroupProfilePicture(groupId)
     const messageByTopic = await fireStore.textMessageByTopic(text)
-    response.send({ groupName, groupPicture, text, file, messageByTopic, logMessage1: "File JSON from get by ID: " + file,
-    logMessage2: "text JSON from get by ID: " + JSON.stringify(text), logMessage3: "text messages separated by topics" + JSON.stringify(messageByTopic)
-    });
+    response.send({ groupName, groupPicture, text, file, messageByTopic });
 });
 
 module.exports = router;
