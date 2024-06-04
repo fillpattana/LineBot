@@ -1,4 +1,4 @@
-const { text } = require('body-parser');
+const admin = require('firebase-admin');
 var Storage = require('../initializeStorage');
 var Getter = require('./Getter');
 
@@ -59,6 +59,56 @@ async function deleteGroupByIdStorage(events){
         console.error('Error deleting files:', err);
     });
 }
+
+async function addGroupId(events) {
+    try {
+        const groupId = events.source.groupId;
+        const docRef = Storage.allGroupsDB.doc('groups');
+
+        const doc = await docRef.get();
+        if (!doc.exists) {
+            await docRef.set({ groupIds: [groupId] });
+        } else {
+            await docRef.update({
+                groupIds: admin.firestore.FieldValue.arrayUnion(groupId)
+            });
+        }
+        console.log(`Group ID ${groupId} added successfully`);
+    } catch (error) {
+        console.error("Error adding group ID: ", error);
+    }
+}
+
+async function removeGroupId(events) {
+    try {
+        const groupId = events.source.groupId;
+        const docRef = Storage.allGroupsDB.doc('groups');
+
+        const doc = await docRef.get();
+        if (doc.exists) {
+            await docRef.update({
+                groupIds: admin.firestore.FieldValue.arrayRemove(groupId)
+            });
+            console.log(`Group ID ${groupId} removed successfully`);
+        } else {
+            console.log("Document does not exist");
+        }
+    } catch (error) {
+        console.error("Error removing group ID: ", error);
+    }
+}
+
+async function getAllGroupId(){
+    const querySnapshot = await Storage.allGroupsDB.get();
+    let allId = [];
+    querySnapshot.forEach(doc => {
+        const data = doc.data();
+        allId.push({...data});
+    });
+    console.log(allId)
+    return allId;
+}
+
 
 async function getAllTextsForGemini(groupId){
     let text = await getAllTextOrderByAsc(groupId)
@@ -204,10 +254,10 @@ async function textMessageByTopic(messages) {
     return result;
 }
 
-module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, 
+module.exports = {deleteGroupByIdFirestore, deleteGroupByIdStorage, addGroupId, removeGroupId,
     getTextByEventsFireStore, getFileByEventsFireStore, addSenderNameToJsonByUserId,
     combineMessage, getAllTextsForGemini, extractImagePublicURLsforGemini, 
     getAllFilesForGemini, getAllTextOrderByAsc, getAllFileOrderByAsc,
     getTextByDateOrderByAsc, getFileByDateOrderByAsc, getTextsByDateForGemini,
-    getFilesByDateForGemini, textMessageByTopic
+    getFilesByDateForGemini, textMessageByTopic, getAllGroupId
 }

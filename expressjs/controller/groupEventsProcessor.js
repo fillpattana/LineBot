@@ -27,28 +27,37 @@ async function eventType(reply_token, events, next){
         return "I only operate in groups for the time being..."
     }
 
-    if (events.type === 'join'){
+    if (events.type === 'join') {
         let body = JSON.stringify({
             replyToken: reply_token,
             messages: [{
                 type: 'text',
-                text: `สวัสดีครับทุกท่านสมาชิก "${await getGroupName(events.source.groupId)}"\nหากไม่เป็นการรบกวน\nผมจะขออณุญาตดูแลบทสนทนาของทุกท่านไว้ให้อยู่ยงคงกระพันราวกับน้ำผึ้งเลยครับผม!"`
+                text: `สวัสดีครับทุกท่านสมาชิก "${await getGroupName(events.source.groupId)}"\nหากไม่เป็นการรบกวน\nผมจะขออณุญาตดูแลบทสนทนาของทุกท่านไว้ให้อยู่ยงคงกระพันราวกับน้ำผึ้งเลยครับผม!`
             }]
-        })
+        });
         request.post({
             url: `${line_reply}`,
             headers: headers,
             body: body
         }, (err, response, body) => {
-            console.log('status of message sending= ' + response.statusCode);
+            if (err) {
+                console.error('Error sending message:', err);
+            } else {
+                console.log('Status of message sending: ' + response.statusCode);
+            }
         });
+    
+        await firebase.addGroupId(events);
     }
 
-    if (events.type === 'leave'){
-
-        await firebase.deleteGroupByIdFirestore(events)
-        await firebase.deleteGroupByIdStorage(events)
-
+    if (events.type === 'leave') {
+        try { 
+            await firebase.deleteGroupByIdFirestore(events);
+            await firebase.deleteGroupByIdStorage(events);
+            await firebase.removeGroupId(events);
+        } catch (error) {
+            console.error("Error handling leave event: ", error);
+        }
     }
     next();
 }

@@ -67,4 +67,22 @@ router.get('/displayTopic/:groupId/:date', async (request, response) => {
     response.send({ groupName, groupPicture, text, file, messageByTopic });
 });
 
+//Get All GroupIds
+router.get('/getAllGroupId', async (request, response) => {
+    try {
+        const groupIds = await fireStore.getAllGroupId(); // Call the function to get group IDs directly
+        response.send({ groupIds });
+    } catch (error) {
+        console.error("Error handling getAllGroupId route:", error);
+        response.status(500).send({ error: "Internal Server Error" });
+    }
+});
+
+router.get('/getGroupName/:groupId', async (request, response) => {
+    const groupId = request.params.groupId;
+    const groupName = await Getter.getGroupName(groupId)
+    const groupPicture = await Getter.getGroupProfilePicture(groupId)
+    response.send({ groupName, groupPicture });
+});
+
 module.exports = router;

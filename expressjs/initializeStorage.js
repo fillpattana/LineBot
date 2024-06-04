@@ -10,8 +10,9 @@ initializeApp({
 const db = getFirestore();
 const lineTextDB = db.collection("TextMessages");
 const lineFileDB = db.collection("FileMessages");
+const allGroupsDB = db.collection("AllGroups");
 
 const bucketName = process.env.BUCKET_NAME;
 const storage = new Storage();
 
-module.exports = {storage, bucketName, lineTextDB, lineFileDB}
+module.exports = {storage, bucketName, lineTextDB, lineFileDB, allGroupsDB}
