@@ -10,7 +10,7 @@ router.set('view engine', 'ejs');
 router.use(bodyParser.urlencoded({extended:false}));
 router.use(bodyParser.json());
 router.use(cors({
-    origin: 'http://localhost:3000' // Allow only this origin
+    origin: 'http://localhost:3000' // Allow only this origin for now
 }));
 var Getter = require('../controller/Getter')
 
@@ -56,7 +56,7 @@ router.get('/displayByDate/:groupId/:date', async (request, response) => {
 });
 
 //Topic Units Display
-router.get('/displayTopic/:groupId/:date', async (request, response) => {
+router.get('/getByTopic/:groupId/:date', async (request, response) => {
     const groupId = request.params.groupId;
     const date = request.params.date;
     let file = await fireStore.getFileByDateOrderByAsc(groupId, date)
@@ -78,11 +78,17 @@ router.get('/getAllGroupId', async (request, response) => {
     }
 });
 
-router.get('/getGroupName/:groupId', async (request, response) => {
+router.get('/getGroupInfo/:groupId', async (request, response) => {
     const groupId = request.params.groupId;
     const groupName = await Getter.getGroupName(groupId)
     const groupPicture = await Getter.getGroupProfilePicture(groupId)
     response.send({ groupName, groupPicture });
+});
+
+router.get('/geminiFlashText/:message', async (request, response) => {
+    const message = request.params.message;
+    const summary = await gemini.flashText(message);
+    response.send({ summary });
 });
 
 module.exports = router;

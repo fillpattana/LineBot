@@ -60,7 +60,7 @@ const bothTextandImage = async (textResults, imageResults) => {
 
 const gemFlashText = genAI.getGenerativeModel({
   model: "gemini-1.5-flash-latest",
-  systemInstruction: "I need you to respond in Thai language. From a given body of conversation text. Your task is to identify the context of the conversation. Begin with a concise title for the topic of discussion, followed by the context summary itself, then finally the key messages of the conversation labelled with the sender's name as well.",
+  systemInstruction: "I will be providing you with a set of conversations from a workplace group chat and I need you to respond in Thai language.\n1. Name the topic of conversation.\n2. Identify the sentiment of each speaker.\n3. Provide a digestible context summary of the conversation along with key takeaways.",
 });
 
 const gemFlashImage = genAI.getGenerativeModel({
@@ -96,25 +96,37 @@ async function flashText(textMessage) {
       {
         role: "user",
         parts: [
+          {text: "phil กล่าวว่า: hello phil กล่าวว่า: I like how this man dresses phil กล่าวว่า: his taste of fashion is the taste I am interested in phil กล่าวว่า: Look at the boots and pants! phil กล่าวว่า: it fits together so well! phil กล่าวว่า: but they’re quite expensive phil กล่าวว่า: so buying exactly what he wears should be too pricey phil กล่าวว่า: ill just find alternatives haha"},
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {text: "## การวิเคราะห์บทสนทนา\n\n**หัวข้อการสนทนา:** แฟชั่นของผู้ชาย\n\n**อารมณ์ของผู้พูด:**\n\n* **Phil:**  ตื่นเต้น, ชื่นชม, สนใจ,  กังวลเรื่องราคา\n\n**สรุปบทสนทนา:**\n\nPhil กำลังพูดถึงแฟชั่นของผู้ชายคนหนึ่งที่เขาชื่นชอบ โดยเฉพาะรองเท้าบูทและกางเกงที่เข้ากันได้ดี Phil ชื่นชมสไตล์ของผู้ชายคนนี้ แต่กังวลว่าราคาของเสื้อผ้าเหล่านั้นอาจแพงเกินไป เขาจึงวางแผนที่จะหาทางเลือกอื่นแทน\n\n**ข้อสรุป:**\n\nPhil ชื่นชอบสไตล์แฟชั่นของผู้ชายคนนี้ แต่เนื่องจากราคาแพง เขาจึงตัดสินใจหาทางเลือกอื่นที่ราคาถูกกว่า \n"},
+        ],
+      },
+      {
+        role: "user",
+        parts: [
+          {text: "phil กล่าวว่า: Good afternoon! phil กล่าวว่า: I am attending a seminar at my internship place phil กล่าวว่า: this program is provides knowledgeable take aways about how we can utilize AI in the workplace phil กล่าวว่า: All in all has been entertaining and interesting phil กล่าวว่า: I do find some things useful phil กล่าวว่า: And the key take aways is not to prompt models in thai language!"},
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {text: "## การวิเคราะห์บทสนทนา\n\n**หัวข้อการสนทนา:**  สัมมนาเกี่ยวกับ AI ในที่ทำงาน\n\n**อารมณ์ของผู้พูด:**\n\n* **Phil:**  ตื่นเต้น, สนใจ, พอใจ,  ได้ประโยชน์\n\n**สรุปบทสนทนา:**\n\nPhil กำลังเล่าถึงประสบการณ์การเข้าร่วมสัมมนาเกี่ยวกับ AI ที่สถานที่ฝึกงานของเขา เขาพบว่าสัมมนานี้ให้ความรู้และน่าสนใจ มีประโยชน์สำหรับการนำ AI มาใช้ในที่ทำงาน และเขาได้เรียนรู้ว่าไม่ควรใช้ภาษาไทยในการถามคำถามกับ AI models\n\n**ข้อสรุป:**\n\nPhil ได้รับประโยชน์จากสัมมนาเกี่ยวกับ AI และได้เรียนรู้ข้อควรระวังในการใช้ภาษาไทยกับ AI models \n"},
+        ],
+      },
+      {
+        role: "user",
+        parts: [
           {text: "phil กล่าวว่า: สวัสดี phil กล่าวว่า: เมื่อ 2 อาทิตย์ที่แล้วเราไปงาน partnership commitee สำหรับที่ฝึกงานเรามาด้วย phil กล่าวว่า: Partnership เป็น google! phil กล่าวว่า: ทั้งตื่นเต้นและสนุกเลยแหละ phil กล่าวว่า: ไม่เคยได้ไปงานแบบนี้มาก่อน phil กล่าวว่า: บางข้อมูลเป็น nda เราจึงไม่พูดดีกว่า phil กล่าวว่า: แต่ ของกินช่วงพักเบรคอร่อยมากๆ phil กล่าวว่า: มีทั้ง puff pastry ใส้กรอกที่ดีสุดๆ มีพายสะปะรดที่อร่อยมากๆ phil กล่าวว่า: แต่ของโปรดเราเลยจะเป็น puff pastry ทูน่าอ่ะ อันนั้นที่ 1 phil กล่าวว่า: โรงอาหารเขาก็ทำอาหารได้อร่อยเกินหน้าเกินตามาก phil กล่าวว่า: อยากไปอีกเลย! phil กล่าวว่า: นอกจากความรู้ ประสบการณ์ ยังได้กินของอร่อยอีกอ่ะ 55555 ใครจะไม่อยากไปใช่มะ"},
         ],
       },
       {
         role: "model",
         parts: [
-          {text: "## ประสบการณ์ไปงาน Partnership Committee ที่ Google\n\nบทสนทนานี้เป็นการเล่าประสบการณ์ของ Phil ที่ไปร่วมงาน Partnership Committee สำหรับที่ฝึกงานของเขา ซึ่งเป็นงานที่จัดโดย Google Phil รู้สึกตื่นเต้นและสนุกกับงานนี้ เพราะไม่เคยได้ไปงานแบบนี้มาก่อน และยังได้เรียนรู้ข้อมูลใหม่ๆ รวมถึงได้ทานอาหารอร่อยๆ อีกด้วย\n\n**Key Messages:**\n\n**Phil:**\n* ไปร่วมงาน Partnership Committee สำหรับที่ฝึกงาน\n* งานจัดโดย Google\n* รู้สึกตื่นเต้นและสนุกกับงาน\n* ได้เรียนรู้ข้อมูลใหม่ๆ\n* อาหารอร่อยมาก โดยเฉพาะ puff pastry ทูน่า\n* อยากไปงานแบบนี้อีก \n"},
-        ],
-      },
-      {
-        role: "user",
-        parts: [
-          {text: "phil กล่าวว่า: ช่วยเลือกรูปภาพหน่อยจะเอาไปลงไอจี phil กล่าวว่า: สองรูปนี้อันไหนดูดีสุด phil กล่าวว่า: ผมว่าจะลงแค่รูปเดียว phil กล่าวว่า: แต่ก็ไม่แน่ถ้าผ่านทั้ง2รูปก็ลงไปให้หมดเลย55555 phil กล่าวว่า: นี่ละอาทิตย์ที่แล้วช่วงเสาร์อาทิตย์เราไปวิ่งมาราธอนมาด้วย phil กล่าวว่า: ที่หัวหินอ่ะ phil กล่าวว่า: สนุกมากๆคือไม่เคยมีประสบการณ์แบบนั้นมาก่อน phil กล่าวว่า: ไม่ได้ยากมากนะ phil กล่าวว่า: วิ่งไป 10 กิโล phil กล่าวว่า: นี่ก็ที่ชายหาด phil กล่าวว่า: รูปไหนดูดีสุดไว้มากบอกด้วยละกันนะ phil กล่าวว่า: อยากฟังจากหลายๆมุมมอง phil กล่าวว่า: ขอบคุณมากๆเลยยยย"},
-        ],
-      },
-      {
-        role: "model",
-        parts: [
-          {text: "## เลือกรูปลงไอจี\n\nบทสนทนานี้เป็นการขอความช่วยเหลือจากเพื่อนในการเลือกรูปภาพเพื่อลงไอจี Phil กำลังตัดสินใจระหว่างสองรูปภาพที่ถ่ายจากการวิ่งมาราธอนที่หัวหินเมื่อช่วงเสาร์อาทิตย์ที่ผ่านมา Phil อยากได้ความคิดเห็นจากเพื่อนๆ ว่ารูปไหนดูดีกว่ากัน และอยากฟังมุมมองจากหลายๆ คน \n\n**Key Messages:**\n\n**Phil:**\n* ขอความช่วยเหลือในการเลือกรูปภาพเพื่อลงไอจี\n* กำลังตัดสินใจระหว่างสองรูปภาพ\n* รูปภาพถ่ายจากการวิ่งมาราธอนที่หัวหิน\n* อยากได้ความคิดเห็นจากเพื่อนๆ ว่ารูปไหนดูดีกว่ากัน\n* อยากฟังมุมมองจากหลายๆ คน\n"},
+          {text: "## การวิเคราะห์บทสนทนา\n\n**หัวข้อการสนทนา:**  งาน Partnership Committee กับ Google\n\n**อารมณ์ของผู้พูด:**\n\n* **Phil:**  ตื่นเต้น, สนุก, พอใจ,  ประทับใจ,  อยากไปอีก\n\n**สรุปบทสนทนา:**\n\nPhil เล่าถึงประสบการณ์การไปงาน Partnership Committee กับ Google ซึ่งเป็นสถานที่ฝึกงานของเขา เขาตื่นเต้นและสนุกกับงานนี้ เพราะไม่เคยได้ไปงานแบบนี้มาก่อน แม้ว่าจะมีข้อมูลบางอย่างที่เป็น NDA (ข้อตกลงไม่เปิดเผยข้อมูล) แต่ Phil ก็ประทับใจกับอาหารว่างช่วงพักเบรค โดยเฉพาะ puff pastry ทูน่าที่เขาชื่นชอบมาก เขาประทับใจกับอาหารและบรรยากาศของงานนี้ และอยากไปอีก\n\n**ข้อสรุป:**\n\nPhil มีประสบการณ์ที่ดีจากงาน Partnership Committee กับ Google โดยเฉพาะอาหารว่างที่อร่อยและบรรยากาศของงาน \n\n\n"},
         ],
       },
     ],
