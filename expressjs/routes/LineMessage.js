@@ -10,7 +10,7 @@ router.set('view engine', 'ejs');
 router.use(bodyParser.urlencoded({extended:false}));
 router.use(bodyParser.json());
 router.use(cors({
-    origin: 'http://localhost:3000' // Allow only this origin for now
+    origin: 'https://line-ec275.web.app' // Allow only this origin for now
 }));
 var Getter = require('../controller/Getter')
 
@@ -89,6 +89,12 @@ router.get('/geminiFlashText/:message', async (request, response) => {
     const message = request.params.message;
     const summary = await gemini.flashText(message);
     response.send({ summary });
+});
+
+router.get('/getUserPicture/:userId', async (request, response) => {
+    const userId = request.params.userId;
+    const pictureUrl = await Getter.getUserProfilePicture(userId);
+    response.send({ pictureUrl });
 });
 
 module.exports = router;

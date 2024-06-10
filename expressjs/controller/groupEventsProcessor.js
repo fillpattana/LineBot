@@ -28,24 +28,24 @@ async function eventType(reply_token, events, next){
     }
 
     if (events.type === 'join') {
-        let body = JSON.stringify({
-            replyToken: reply_token,
-            messages: [{
-                type: 'text',
-                text: `สวัสดีครับทุกท่านสมาชิก "${await getGroupName(events.source.groupId)}"\nหากไม่เป็นการรบกวน\nผมจะขออณุญาตดูแลบทสนทนาของทุกท่านไว้ให้อยู่ยงคงกระพันราวกับน้ำผึ้งเลยครับผม!`
-            }]
-        });
-        request.post({
-            url: `${line_reply}`,
-            headers: headers,
-            body: body
-        }, (err, response, body) => {
-            if (err) {
-                console.error('Error sending message:', err);
-            } else {
-                console.log('Status of message sending: ' + response.statusCode);
-            }
-        });
+        // let body = JSON.stringify({
+        //     replyToken: reply_token,
+        //     messages: [{
+        //         type: 'text',
+        //         text: `สวัสดีครับทุกท่านสมาชิก "${await getGroupName(events.source.groupId)}"\nหากไม่เป็นการรบกวน\nผมจะขออณุญาตดูแลบทสนทนาของทุกท่านไว้ให้อยู่ยงคงกระพันราวกับน้ำผึ้งเลยครับผม!`
+        //     }]
+        // });
+        // request.post({
+        //     url: `${line_reply}`,
+        //     headers: headers,
+        //     body: body
+        // }, (err, response, body) => {
+        //     if (err) {
+        //         console.error('Error sending message:', err);
+        //     } else {
+        //         console.log('Status of message sending: ' + response.statusCode);
+        //     }
+        // });
     
         await firebase.addGroupId(events);
     }
