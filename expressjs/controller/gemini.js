@@ -60,7 +60,7 @@ const bothTextandImage = async (textResults, imageResults) => {
 
 const gemFlashText = genAI.getGenerativeModel({
   model: "gemini-1.5-flash-latest",
-  systemInstruction: "I will be providing you with a set of conversations from a workplace group chat and I need you to respond in Thai language.\n1. Name the topic of conversation.\n2. Identify the sentiment of each speaker.\n3. Provide a digestible context summary of the conversation along with key takeaways.",
+  systemInstruction: "I will be providing you with a set of conversations from a workplace group chat and I need you to respond in Thai language.\n1. Name the topic of conversation.\n2. Identify the sentiment of each speaker.\n3. Provide a digestible context summary of the conversation in bullets.",
 });
 
 const gemFlashImage = genAI.getGenerativeModel({
