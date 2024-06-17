@@ -91,10 +91,18 @@ router.get('/geminiFlashText/:message', async (request, response) => {
     response.send({ summary });
 });
 
+router.get('/geminiFlashSentiment/:message', async (request, response) => {
+    const message = request.params.message;
+    const score = await gemini.flashText(message);
+    response.send({ score });
+});
+
 router.get('/getUserPicture/:userId', async (request, response) => {
     const userId = request.params.userId;
     const pictureUrl = await Getter.getUserProfilePicture(userId);
     response.send({ pictureUrl });
 });
+
+
 
 module.exports = router;
