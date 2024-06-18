@@ -80,7 +80,7 @@ async function lineVerify(originalSignature, body){
         functions.logger.error("Unauthorized");
         return false;
     }
-    console.log(`Signature verified, authority granted`)
+    console.log(`Line Signature verified, authority granted`)
     return true;
 }
 

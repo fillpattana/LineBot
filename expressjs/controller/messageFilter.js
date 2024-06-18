@@ -2,6 +2,7 @@ const request = require('request')
 const messageIsText = require('./textProcessor')
 const messageIsFile = require('./fileProcessor')
 const Getter = require('./Getter')
+const sentiment = require('./chatSentiment')
 
 const messageFilter = (request, response, next) => {
     if (!Getter.lineVerify(request.headers["x-line-signature"], request.body)) {
@@ -18,7 +19,7 @@ async function msg_type(reply_token, msg, next){
     switch (msgType) {
         case 'text':
             console.log(`${msgType} Received\n`);
-            messageIsText.processText(reply_token, msg);
+            messageIsText.processText(reply_token, msg)
             break;
         case 'image':
             messageIsFile.processFile(reply_token, msg);
