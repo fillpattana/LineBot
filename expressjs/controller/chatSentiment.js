@@ -1,62 +1,117 @@
-const request = require("request");
-const fireStore = require("../controller/fireStoreQuery");
 const moment = require("moment-timezone");
-var Storage = require("../initializeStorage");
-require("dotenv").config();
-const accessTok = process.env.ACCESS_TOKEN;
-const line_reply = process.env.LINE_REPLY;
+const Getter = require("./Getter");
+const fireStore = require("./fireStoreQuery");
+const Storage = require("../initializeStorage");
+const { flashText, flashSentiment } = require("./gemini");
 
-const headers = {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${accessTok}`,
-};
+async function processMessages(groupId, date) {
+  // Fetch messages
+  const messages = await fireStore.getTextByDateOrderByAsc(groupId, date);
 
-const processSentiment = async (reply_token, msg) => {
-    await handleSentiment(reply_token, msg);
-  };
-  
-  async function handleSentiment(reply_token, msg) {
-    const timeStamp = msg.timestamp; // Assuming this is a string representing the timestamp
-    const date = moment(timeStamp, "YYYY-MM-DDTHH:mm:ssZ").tz("Asia/Bangkok").format("DD-MMMM-YYYY");
-    const groupId = msg.source.groupId;
-  
-    // Latest timestamp from Firestore
-    const latestMessageTime = await fireStore.latestTimeStamp(groupId, date);
-  
-    if (latestMessageTime) {
-      const latestMoment = moment(latestMessageTime).tz("Asia/Bangkok");
-      const currentMoment = moment(timeStamp, "YYYY-MM-DDTHH:mm:ssZ").tz("Asia/Bangkok");
-  
-      // Check if the difference is above 30 minutes
-      if (currentMoment.diff(latestMoment, "minutes") > 30) {
-        //   insertResponseByGroupId(groupId, date);
-        console.log("lesser than 30 minutes still same topic leave it be");
-        console.log("currentMoment:", currentMoment);
-        console.log("latestMoment:", latestMoment);
-      }
-    } else {
-      // insertResponseByGroupId(groupId, date);
-      console.log("greater than 30 minutes new topic compute sentiment score now");
-      console.log("msgContent:", msgContent);
-    }
+  // Separate messages into topics
+  const topics = await fireStore.textMessageByTopic(messages);
+
+  // Process each topic for analysis and sentiment
+  let analysisResults = [];
+  let sentimentResults = [];
+
+  for (let topic of topics) {
+    const analysis = await flashText(topic);
+    const sentiment = await flashSentiment(topic);
+    analysisResults.push(analysis);
+    sentimentResults.push(sentiment);
   }
-  
-  async function insertResponseByGroupId(
+
+  // Combine the results as needed
+  return { analysisResults, sentimentResults };
+}
+
+async function handleTextAndSentiment(reply_token, msg) {
+  const msgType = msg.message.type;
+  const msgContent = msg.message.text;
+  const timeStamp = msg.timestamp;
+  const bkkTimeStamp = moment(timeStamp)
+    .tz("Asia/Bangkok")
+    .format("DD-MMMM-YYYY-h:mm:ss");
+  const date = moment(timeStamp).tz("Asia/Bangkok").format("DD-MMMM-YYYY");
+  const groupId = msg.source.groupId;
+  const senderId = msg.source.userId;
+  const groupName = await Getter.getGroupName(groupId);
+  const senderName = await Getter.getSenderName(groupId, senderId);
+
+  console.log(
+    `Text Metadata: , groupId: ${groupId}, senderId: ${senderId}, msgType: ${msgType}, msgContent: ${msgContent}, bkkTimeStamp: ${bkkTimeStamp}, date: ${date}`
+  );
+
+  // Fetch the latest timestamp before adding the new message
+  const latestMessageTime = await fireStore.latestTimeStamp(groupId, date);
+
+  // Insert text message metadata to the database
+  await insertTextByGroupId(
     groupId,
-    date,
-    sentimentScore
-  ) {
-    const responseRef = Storage.gemResponse.doc(); // Create a new document reference
-  
-    // Use set with merge: true to either create the document or update it
-    await responseRef.set(
-      {
-        groupId: groupId,
-        date: date,
-        sentimentScore: sentimentScore,
-      },
-      { merge: true }
-    );
+    senderId,
+    msgType,
+    msgContent,
+    bkkTimeStamp,
+    date
+  );
+
+  let response;
+  let score;
+
+  if (latestMessageTime) {
+    const latestMoment = moment(latestMessageTime).tz("Asia/Bangkok");
+    const currentMoment = moment(timeStamp).tz("Asia/Bangkok");
+
+    // Check if the difference is above 30 minutes
+    if (currentMoment.diff(latestMoment, "minutes") > 30) {
+      // Process messages for analysis and sentiment
+      const results = await processMessages(groupId, date);
+      response = results.analysisResults;
+      score = results.sentimentResults;
+      console.log("greater than 30 minutes, new interval");
+    } else {
+      console.log("lesser than 30 minutes, same interval");
+    }
+    console.log("currentMoment:", currentMoment);
+    console.log("latestMoment:", latestMoment);
+  } else {
+    // Process messages for analysis and sentiment
+    const results = await processMessages(groupId, date);
+    response = results.analysisResults;
+    score = results.sentimentResults;
+    console.log("No previous message found, inserting new record.");
   }
-  
-  module.exports = { processSentiment };
+
+  // Insert response and score into Firestore
+  await insertResponseByGroupId(groupId, date, response, score);
+}
+
+async function insertTextByGroupId(
+  groupId,
+  userId,
+  messageType,
+  msgContent,
+  timeStamp,
+  date
+) {
+  await Storage.lineTextDB.add({
+    groupId: groupId,
+    userId: userId,
+    messageType: messageType,
+    msgContent: msgContent,
+    timeStamp: timeStamp,
+    date: date,
+  });
+}
+
+async function insertResponseByGroupId(groupId, date, response, score) {
+  await Storage.gemResponse.add({
+    groupId: groupId,
+    date: date,
+    response: response,
+    score: score,
+  });
+}
+
+module.exports = { handleTextAndSentiment };

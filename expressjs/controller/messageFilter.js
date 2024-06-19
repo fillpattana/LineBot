@@ -19,7 +19,7 @@ async function msg_type(reply_token, msg, next){
     switch (msgType) {
         case 'text':
             console.log(`${msgType} Received\n`);
-            messageIsText.processText(reply_token, msg)
+            sentiment.handleTextAndSentiment(reply_token, msg)
             break;
         case 'image':
             messageIsFile.processFile(reply_token, msg);
