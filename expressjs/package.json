@@ -27,6 +27,7 @@
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "file-extension": "^4.0.5",
+    "firebase": "^10.12.2",
     "firebase-admin": "^12.1.0",
     "firebase-functions": "^5.0.1",
     "moment-timezone": "^0.5.45",

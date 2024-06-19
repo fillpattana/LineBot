@@ -63,8 +63,11 @@ async function handleTextAndSentiment(reply_token, msg) {
     const latestMoment = moment(latestMessageTime).tz("Asia/Bangkok");
     const currentMoment = moment(timeStamp).tz("Asia/Bangkok");
 
+    const timeDifference = currentMoment.diff(latestMoment, "minutes")
+    console.log("Time Difference:", timeDifference)
+
     // Check if the difference is above 30 minutes
-    if (currentMoment.diff(latestMoment, "minutes") > 30) {
+    if (timeDifference > 30) {
       // Process messages for analysis and sentiment
       const results = await processMessages(groupId, date);
       response = results.analysisResults;
