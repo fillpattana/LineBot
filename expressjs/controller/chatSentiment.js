@@ -39,6 +39,8 @@ async function handleTextAndSentiment(reply_token, msg) {
   const groupName = await Getter.getGroupName(groupId);
   const senderName = await Getter.getSenderName(groupId, senderId);
 
+  const formattedTimeStamp = moment(timeStamp).valueOf();
+
   console.log(
     `Text Metadata: , groupId: ${groupId}, senderId: ${senderId}, msgType: ${msgType}, msgContent: ${msgContent}, bkkTimeStamp: ${bkkTimeStamp}, date: ${date}`
   );
@@ -55,6 +57,13 @@ async function handleTextAndSentiment(reply_token, msg) {
     bkkTimeStamp,
     date
   );
+
+  await insertFormattedTimeStamp(
+    groupId,
+    date,
+    formattedTimeStamp,
+    msgContent
+  )
 
   let response;
   let score;
@@ -116,5 +125,15 @@ async function insertResponseByGroupId(groupId, date, response, score) {
     score: score,
   });
 }
+
+async function insertFormattedTimeStamp(groupId, date, timeStamp, msgContent) {
+  await Storage.textFormattedTimeStamp.add({
+    groupId: groupId,
+    date: date,
+    timeStamp: timeStamp,
+    msgContent: msgContent,
+  });
+}
+
 
 module.exports = { handleTextAndSentiment };
