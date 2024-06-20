@@ -7,10 +7,8 @@ const { flashText, flashSentiment } = require("./gemini");
 async function processMessages(groupId, date) {
   // Fetch messages
   const messages = await fireStore.getTextByDateOrderByAsc(groupId, date);
-
   // Separate messages into topics
   const topics = await fireStore.textMessageByTopic(messages);
-
   // Process each topic for analysis and sentiment
   let analysisResults = [];
   let sentimentResults = [];
@@ -58,12 +56,7 @@ async function handleTextAndSentiment(reply_token, msg) {
     date
   );
 
-  await insertFormattedTimeStamp(
-    groupId,
-    date,
-    formattedTimeStamp,
-    msgContent
-  )
+  await insertFormattedTimeStamp(groupId, date, formattedTimeStamp, msgContent);
 
   let response;
   let score;
@@ -71,17 +64,18 @@ async function handleTextAndSentiment(reply_token, msg) {
   if (latestMessageTime) {
     const latestMoment = moment(latestMessageTime).tz("Asia/Bangkok");
     const currentMoment = moment(timeStamp).tz("Asia/Bangkok");
-
-    const timeDifference = currentMoment.diff(latestMoment, "minutes")
-    console.log("Time Difference:", timeDifference)
+    console.log("currentMoment", currentMoment);
+    console.log("latestMoment:", latestMoment);
+    const timeDifference = currentMoment.diff(latestMessageTime, "minutes");
+    console.log("Time Difference:", timeDifference);
 
     // Check if the difference is above 30 minutes
     if (timeDifference > 30) {
       // Process messages for analysis and sentiment
+      console.log("greater than 30 minutes, new interval");
       const results = await processMessages(groupId, date);
       response = results.analysisResults;
       score = results.sentimentResults;
-      console.log("greater than 30 minutes, new interval");
     } else {
       console.log("lesser than 30 minutes, same interval");
     }
@@ -115,6 +109,7 @@ async function insertTextByGroupId(
     timeStamp: timeStamp,
     date: date,
   });
+  console.log("saved text metadatas into collection")
 }
 
 async function insertResponseByGroupId(groupId, date, response, score) {
@@ -124,6 +119,7 @@ async function insertResponseByGroupId(groupId, date, response, score) {
     response: response,
     score: score,
   });
+  console.log("sentiment results saved into collection")
 }
 
 async function insertFormattedTimeStamp(groupId, date, timeStamp, msgContent) {
@@ -133,7 +129,7 @@ async function insertFormattedTimeStamp(groupId, date, timeStamp, msgContent) {
     timeStamp: timeStamp,
     msgContent: msgContent,
   });
+  console.log("formatted time stamps saved into collection")
 }
-
 
 module.exports = { handleTextAndSentiment };

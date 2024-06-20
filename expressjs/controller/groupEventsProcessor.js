@@ -1,7 +1,8 @@
 const request = require('request')
 const { getGroupName } = require('./Getter');
 const { lineVerify } = require('./Getter');
-var firebase = require('./fireStoreQuery')
+var firebaseFireStore = require('./fireStoreQuery')
+var firebaseStorage = require('./storageQuery')
 require('dotenv').config();
 const line_reply = process.env.LINE_REPLY
 const accessTok = process.env.ACCESS_TOKEN;
@@ -47,14 +48,14 @@ async function eventType(reply_token, events, next){
         //     }
         // });
     
-        await firebase.addGroupId(events);
+        await firebaseFireStore.addGroupId(events);
     }
 
     if (events.type === 'leave') {
         try { 
-            await firebase.deleteGroupByIdFirestore(events);
-            await firebase.deleteGroupByIdStorage(events);
-            await firebase.removeGroupId(events);
+            await firebaseFireStore.deleteGroupByIdFirestore(events);
+            await firebaseStorage.deleteGroupByIdStorage(events);
+            await firebaseFireStore.removeGroupId(events);
         } catch (error) {
             console.error("Error handling leave event: ", error);
         }
