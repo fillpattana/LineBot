@@ -14,10 +14,6 @@ async function getTextByEventsFireStore(events) {
   return Storage.lineTextDB.where("groupId", "==", events.source.groupId);
 }
 
-async function getFormattedTextByEventsFireStore(events) {
-  return Storage.textFormattedTimeStamp.where("groupId", "==", events.source.groupId);
-}
-
 async function getFileByEventsFireStore(events) {
   return Storage.lineFileDB.where("groupId", "==", events.source.groupId);
 }
@@ -32,17 +28,6 @@ async function deleteGroupByIdFirestore(events) {
     });
   } else {
     console.log("Text collection is empty");
-  }
-
-  let formattedTimeStampCollection = await getFormattedTextByEventsFireStore(events);
-  if (!formattedTimeStampCollection.empty) {
-    await formattedTimeStampCollection.get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        doc.ref.delete();
-      });
-    });
-  } else {
-    console.log("formattedTimeStampCollection is empty");
   }
 
   let fileCollection = await getFileByEventsFireStore(events);
@@ -259,9 +244,8 @@ async function textMessageByTopic(messages) {
 }
 
 async function latestTimeStamp(groupId, date) {
-  console.log("starting query for latest message");
   console.log(
-    "inside latestTimeStamp Function",
+    "Begin firestore latestTimeStamp Function",
     "groupId:",
     groupId,
     "date:",
@@ -269,10 +253,10 @@ async function latestTimeStamp(groupId, date) {
   );
 
   try {
-    const querySnapshot = await Storage.textFormattedTimeStamp
+    const querySnapshot = await Storage.lineTextDB
       .where("groupId", "==", groupId)
       .where("date", "==", date)
-      .orderBy("timeStamp", "desc") // Ensure documents are ordered by timestamp
+      .orderBy("formattedTimeStamp", "desc") // Ensure documents are ordered by timestamp
       .limit(1) // Get only the latest document
       .get();
 
@@ -282,7 +266,7 @@ async function latestTimeStamp(groupId, date) {
     }
 
     let latestDoc = querySnapshot.docs[0];
-    let latestTimestamp = latestDoc.data().timeStamp; // Ensure the field name matches
+    let latestTimestamp = latestDoc.data().formattedTimeStamp; // Ensure the field name matches
     console.log("Latest Timestamp found:", latestTimestamp);
     return latestTimestamp;
   } catch (error) {

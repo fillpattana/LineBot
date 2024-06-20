@@ -12,7 +12,6 @@ const lineTextDB = db.collection("TextMessages");
 const lineFileDB = db.collection("FileMessages");
 const allGroupsDB = db.collection("AllGroups");
 const gemResponse = db.collection("GeminiTextResponses");
-const textFormattedTimeStamp = db.collection("TextTimeStamp");
 
 const bucketName = process.env.BUCKET_NAME;
 const storage = new Storage();
@@ -23,6 +22,5 @@ module.exports = {
   lineTextDB,
   lineFileDB,
   allGroupsDB,
-  gemResponse,
-  textFormattedTimeStamp
+  gemResponse
 };

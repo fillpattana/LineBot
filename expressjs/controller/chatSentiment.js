@@ -30,7 +30,7 @@ async function handleTextAndSentiment(reply_token, msg) {
   const timeStamp = msg.timestamp;
   const bkkTimeStamp = moment(timeStamp)
     .tz("Asia/Bangkok")
-    .format("DD-MMMM-YYYY-h:mm:ss");
+    .format("DD-MMMM-YYYY-HH:mm:ss");
   const date = moment(timeStamp).tz("Asia/Bangkok").format("DD-MMMM-YYYY");
   const groupId = msg.source.groupId;
   const senderId = msg.source.userId;
@@ -53,10 +53,9 @@ async function handleTextAndSentiment(reply_token, msg) {
     msgType,
     msgContent,
     bkkTimeStamp,
-    date
+    date,
+    formattedTimeStamp
   );
-
-  await insertFormattedTimeStamp(groupId, date, formattedTimeStamp, msgContent);
 
   let response;
   let score;
@@ -99,7 +98,8 @@ async function insertTextByGroupId(
   messageType,
   msgContent,
   timeStamp,
-  date
+  date,
+  formattedTimeStamp
 ) {
   await Storage.lineTextDB.add({
     groupId: groupId,
@@ -108,6 +108,7 @@ async function insertTextByGroupId(
     msgContent: msgContent,
     timeStamp: timeStamp,
     date: date,
+    formattedTimeStamp: formattedTimeStamp,
   });
   console.log("saved text metadatas into collection");
 }
@@ -123,17 +124,6 @@ async function insertResponseByGroupId(groupId, date, response, score) {
     { merge: true }
   );
   console.log("Sentiment results saved into collection");
-}
-
-
-async function insertFormattedTimeStamp(groupId, date, timeStamp, msgContent) {
-  await Storage.textFormattedTimeStamp.add({
-    groupId: groupId,
-    date: date,
-    timeStamp: timeStamp,
-    msgContent: msgContent,
-  });
-  console.log("formatted time stamps saved into collection");
 }
 
 module.exports = { handleTextAndSentiment };
