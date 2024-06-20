@@ -109,18 +109,22 @@ async function insertTextByGroupId(
     timeStamp: timeStamp,
     date: date,
   });
-  console.log("saved text metadatas into collection")
+  console.log("saved text metadatas into collection");
 }
 
 async function insertResponseByGroupId(groupId, date, response, score) {
-  await Storage.gemResponse.add({
-    groupId: groupId,
-    date: date,
-    response: response,
-    score: score,
-  });
-  console.log("sentiment results saved into collection")
+  const docRef = Storage.gemResponse.doc(groupId);
+  await docRef.set(
+    {
+      date: date,
+      response: response,
+      score: score,
+    },
+    { merge: true }
+  );
+  console.log("Sentiment results saved into collection");
 }
+
 
 async function insertFormattedTimeStamp(groupId, date, timeStamp, msgContent) {
   await Storage.textFormattedTimeStamp.add({
@@ -129,7 +133,7 @@ async function insertFormattedTimeStamp(groupId, date, timeStamp, msgContent) {
     timeStamp: timeStamp,
     msgContent: msgContent,
   });
-  console.log("formatted time stamps saved into collection")
+  console.log("formatted time stamps saved into collection");
 }
 
 module.exports = { handleTextAndSentiment };
