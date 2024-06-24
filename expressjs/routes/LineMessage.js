@@ -5,6 +5,7 @@ var router = express();
 var messageController = require("../controller/messageFilter");
 var eventController = require("../controller/groupEventsProcessor");
 var fireStore = require("../controller/fireStoreQuery");
+const sentiment = require('../controller/sentimentProcessor');
 const bodyParser = require("body-parser");
 router.set("view engine", "ejs");
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -127,6 +128,20 @@ router.get("/getUserPicture/:userId", async (request, response) => {
   const userId = request.params.userId;
   const pictureUrl = await Getter.getUserProfilePicture(userId);
   response.send({ pictureUrl });
+});
+
+router.get("/getSentimentScores/:groupId/:date", async (request, response) => {
+  const groupId = request.params.groupId;
+  const date = request.params.date;
+  const score = await fireStore.getSentimentScores(groupId, date);
+  response.send({ score });
+});
+
+router.get("/updateSentiment/:groupId/:date", async (request, response) => {
+  const groupId = request.params.groupId;
+  const date = request.params.date;
+  const score = await sentiment.processMessages(groupId, date);
+  response.send({ score });
 });
 
 module.exports = router;

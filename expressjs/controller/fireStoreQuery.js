@@ -276,6 +276,19 @@ async function latestTimeStamp(groupId, date) {
   }
 }
 
+async function getSentimentScores(groupId, date) {
+  const querySnapshot = await Storage.gemResponse
+    .where("groupId", "==", groupId)
+    .where("date", "==", date)
+    .get();
+  let score = [];
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    score.push({ ...data });
+  });
+  return score;
+}
+
 module.exports = {
   deleteGroupByIdFirestore,
   addGroupId,
@@ -296,4 +309,5 @@ module.exports = {
   textMessageByTopic,
   getAllGroupId,
   latestTimeStamp,
+  getSentimentScores,
 };
