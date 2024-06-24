@@ -2,27 +2,7 @@ const moment = require("moment-timezone");
 const Getter = require("./Getter");
 const fireStore = require("./fireStoreQuery");
 const Storage = require("../initializeStorage");
-const { flashText, flashSentiment } = require("./gemini");
-
-async function processMessages(groupId, date) {
-  // Fetch messages
-  const messages = await fireStore.getTextByDateOrderByAsc(groupId, date);
-  // Separate messages into topics
-  const topics = await fireStore.textMessageByTopic(messages);
-  // Process each topic for analysis and sentiment
-  let analysisResults = [];
-  let sentimentResults = [];
-
-  for (let topic of topics) {
-    const analysis = await flashText(topic);
-    const sentiment = await flashSentiment(topic);
-    analysisResults.push(analysis);
-    sentimentResults.push(sentiment);
-  }
-
-  // Combine the results as needed
-  return { analysisResults, sentimentResults };
-}
+const Sentiment = require("./sentimentProcessor");
 
 async function handleTextAndSentiment(reply_token, msg) {
   const msgType = msg.message.type;
@@ -72,7 +52,7 @@ async function handleTextAndSentiment(reply_token, msg) {
     if (timeDifference > 30) {
       // Process messages for analysis and sentiment
       console.log("greater than 30 minutes, new interval");
-      const results = await processMessages(groupId, date);
+      const results = await Sentiment.processMessages(groupId, date);
       response = results.analysisResults;
       score = results.sentimentResults;
     } else {
@@ -82,7 +62,7 @@ async function handleTextAndSentiment(reply_token, msg) {
     console.log("latestMoment:", latestMoment);
   } else {
     // Process messages for analysis and sentiment
-    const results = await processMessages(groupId, date);
+    const results = await Sentiment.processMessages(groupId, date);
     response = results.analysisResults;
     score = results.sentimentResults;
     console.log("No previous message found, inserting new record.");
