@@ -94,9 +94,11 @@ async function insertTextByGroupId(
 }
 
 async function insertResponseByGroupId(groupId, date, response, score) {
-  const docRef = Storage.gemResponse.doc(groupId);
+  const documentId = `${groupId}_${date}`;
+  const docRef = Storage.gemResponse.doc(documentId);
   await docRef.set(
     {
+      groupId: groupId,
       date: date,
       response: response,
       score: score,
