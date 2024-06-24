@@ -262,6 +262,7 @@ async function latestTimeStamp(groupId, date) {
 
     if (querySnapshot.empty) {
       console.log("No matching documents.");
+      console.log("calculate sentiment for the latest date")
       return null;
     }
 
