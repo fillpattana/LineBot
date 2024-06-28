@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funky Honey The Line Bot</title>
+    <script>
+        console.log("<%= logMessage1 %>");
+        console.log("<%= logMessage2 %>");
+    </script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dad611;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f845;
+        }
+        .header {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+    <img src="<%= groupPicture %>" alt="Image" width="200" height="auto">
+    <h1><%= groupName %></h1>
+    </div>
+    <h3>Texts:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Sender Name</th>
+                <th>Message Content</th>
+                <th>Message Type</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% text.forEach(function(message) { %>
+                <tr>
+                    <td><%= message.senderName %></td>
+                    <% if (message.msgContent.includes('https://')) { %>
+                        <td><a href="<%= message.msgContent %>"><%= message.msgContent %></a></td>
+                    <% } else { %>
+                        <td><%= message.msgContent %></td>
+                    <% } %>
+                    <td><%= message.messageType %></td>
+                    <td><%= message.timeStamp %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <h3>Files:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Sender Name</th>
+                <th>File URL</th>
+                <th>Message Type</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% file.forEach(function(message) { %>
+                <tr>
+                    <td><%= message.senderName %></td>
+                    <% if (message.messageType === 'image') { %>
+                        <td><img src="<%= message.publicUrl %>" alt="Image" width="200" height="auto"></td>
+                    <% } else { %>
+                        <td><a href="<%= message.publicUrl %>"><%= message.publicUrl %></a></td>
+                    <% } %>
+                    <td><%= message.messageType %></td>
+                    <td><%= message.timeStamp %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+    <h3>Text Summary By Flash Gemini:</h3>
+    <p>
+        <%= textByGem %>
+    </p>
+    <h3>Image Summary By Flash Gemini:</h3>
+    <p>
+        <%= imageByGem %>
+    </p>
+    <h3>Both Image and Text Summary By Flash Gemini:</h3>
+    <p>
+        <%= bothByGem %>
+    </p>
+</body>
+</html>
