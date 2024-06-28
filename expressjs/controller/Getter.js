@@ -37,6 +37,17 @@ async function getGroupProfilePicture(groupId) {
       return response.data.pictureUrl
 }
 
+async function getUserProfilePicture(userId) {
+    const url = `${line_message_api}/profile/${userId}`;
+    const response = await axios({
+        method: 'get',
+        headers: textheaders,
+        url: url,
+        responseType: 'json',
+      });
+      return response.data.pictureUrl
+}
+
 async function getSenderName(groupId, userId) {
     const url = `${line_message_api}/group/${groupId}/member/${userId}`;
     const response = await axios({
@@ -69,8 +80,8 @@ async function lineVerify(originalSignature, body){
         functions.logger.error("Unauthorized");
         return false;
     }
-    console.log(`Signature verified, authority granted`)
+    console.log(`Line Signature verified, authority granted`)
     return true;
 }
 
-module.exports = {getGroupName, getSenderName, getFile, lineVerify, getGroupProfilePicture}
+module.exports = {getGroupName, getSenderName, getFile, lineVerify, getGroupProfilePicture, getUserProfilePicture}
