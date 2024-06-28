@@ -5,18 +5,32 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "nodemon ./src/index.js",
-    "start": "node .src/index.js"
+    "start": "node ./src/index.js",
+    "deploy": "firebase deploy --only functions:LineBotYdm",
+    "deploy:auto": "firebase emulators:start",
+    "log": "firebase functions:log --only functions:LineBotYdm"
+  },
+  "engines": {
+    "node": "18"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.11.1",
+    "axios": "^1.6.8",
     "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.19.2",
+    "file-extension": "^4.0.5",
+    "firebase": "^10.12.2",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.1",
     "moment-timezone": "^0.5.45",
-    "mongoose": "^8.3.2",
     "request": "^2.88.2"
   },
   "devDependencies": {

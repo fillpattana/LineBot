@@ -1,38 +1,48 @@
 const request = require('request')
 const messageIsText = require('./textProcessor')
-const messageIsImage = require('./imageProcessor')
-require('dotenv').config();
-const accessTok = process.env.ACCESSTOKEN;
-const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${accessTok}`
-}
-// const bodyParser = require('body-parser');
-// router.use(bodyParser.urlencoded({extended:false}));
-// router.use(bodyParser.json());
+const messageIsFile = require('./fileProcessor')
+const Getter = require('./Getter')
+const sentiment = require('./chatSentiment')
 
-const messageFilter = (request, response) => {
+const messageFilter = (request, response, next) => {
+    if (!Getter.lineVerify(request.headers["x-line-signature"], request.body)) {
+        return res.status(401).send("Unauthorized");
+    }
     let reply_token = request.body.events[0].replyToken
     let msg = request.body.events[0]
-    msg_type(reply_token, msg)
-    response.sendStatus(201)
+    msg_type(reply_token, msg, next)
 }
 
-async function msg_type(reply_token, msg){
-    const msgType = msg.message.type
-    console.log("Message Type:", msgType)
-    if (msgType === 'text'){
-        console.log("text handled successfully\n")
-        messageIsText.processText(reply_token, msg)
+async function msg_type(reply_token, msg, next){
+    if (msg && msg.message && msg.message.type) {
+    const msgType = msg.message.type;
+    switch (msgType) {
+        case 'text':
+            console.log(`${msgType} Received\n`);
+            sentiment.handleTextAndSentiment(reply_token, msg)
+            break;
+        case 'image':
+            messageIsFile.processFile(reply_token, msg);
+            console.log(`${msgType} Received\n`);
+            break;
+        case 'file':
+            messageIsFile.processFile(reply_token, msg);
+            console.log(`${msgType} Received\n`);
+            break;
+        case 'video':
+            messageIsFile.processFile(reply_token, msg);
+            console.log(`${msgType} Received\n`);
+            break;
+        case 'audio':
+            messageIsFile.processFile(reply_token, msg);
+            console.log(`${msgType} Received\n`);
+            break;
     }
-    if (msgType === 'image'){
-        messageIsImage.processImage(reply_token, msg)
-        console.log("We are working on the image handling\n")
     }
-    if (msgType === 'File'){
-        console.log("We are working on the file handling\n")
+    else{
+        next();
     }
-
+    next();
 }
 
 module.exports = {messageFilter}
