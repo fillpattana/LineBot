@@ -133,8 +133,8 @@ router.get("/getUserPicture/:userId", async (request, response) => {
 router.get("/getSentimentScores/:groupId/:date", async (request, response) => {
   const groupId = request.params.groupId;
   const date = request.params.date;
-  const score = await fireStore.getSentimentScores(groupId, date);
-  response.send({ score });
+  const gemResponse = await fireStore.getSentimentScores(groupId, date);
+  response.send({ gemResponse });
 });
 
 router.get("/updateSentiment/:groupId/:date", async (request, response) => {
